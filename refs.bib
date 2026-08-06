@@ -1,0 +1,331 @@
+% Paper D 参考文献 (显式 top-k 稀疏 vs RL 内禀子网络 / high-lr 风险预算)
+% 本会话 web 核实 arXiv / 会议来源
+
+% ===== RLVR 算法协议 (实验底座; 非本文主张) =====
+@misc{schulman2017ppo,
+  title         = {Proximal Policy Optimization Algorithms},
+  author        = {Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
+  year          = {2017},
+  eprint        = {1707.06347},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/1707.06347}
+}
+
+@misc{shao2024deepseekmath,
+  title         = {{DeepSeekMath}: Pushing the Limits of Mathematical Reasoning in Open Language Models},
+  author        = {Shao, Zhihong and Wang, Peiyi and Zhu, Qihao and Xu, Runxin and Song, Junxiao and Bi, Xiao and Zhang, Haowei and Zhang, Mingchuan and Li, Y. K. and Wu, Y. and Guo, Daya},
+  year          = {2024},
+  eprint        = {2402.03300},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2402.03300}
+}
+
+@misc{yu2025dapo,
+  title         = {{DAPO}: An Open-Source {LLM} Reinforcement Learning System at Scale},
+  author        = {Yu, Qiying and others},
+  year          = {2025},
+  eprint        = {2503.14476},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2503.14476}
+}
+
+% ===== RLVR 效应稀疏的 token 轴 (vs 本文坐标轴; 同现象不同轴) =====
+@misc{meng2026sparsecritical,
+  title         = {Sparse but Critical: A Token-Level Analysis of Distributional Shifts in {RLVR} Fine-Tuning of {LLMs}},
+  author        = {Meng, Haoming and Huang, Kexin and Wei, Shaohang and Ma, Chiyu and Yang, Shuo and Wang, Xue and Wang, Guoyin and Ding, Bolin and Zhou, Jingren},
+  year          = {2026},
+  eprint        = {2603.22446},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2603.22446}
+}
+
+% ===== RLVR 更新方向 (token 级 ΔlogP + 测试时外推, vs 本文坐标级训练 lr 放大) =====
+@misc{huang2026direction,
+  title         = {On the Direction of {RLVR} Updates for {LLM} Reasoning: Identification and Exploitation},
+  author        = {Huang, Kexin and others},
+  year          = {2026},
+  eprint        = {2603.22117},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2603.22117}
+}
+
+% ===== 负梯度/样本极性文献 (neg 通道异轴定位, 坐标级 vs token/sample 级) =====
+@misc{deng2025negativegrad,
+  title         = {On the Effect of Negative Gradient in Group Relative Deep Reinforcement Optimization},
+  author        = {Deng, Wenlong and Ren, Yi and Li, Muchen and Sutherland, Danica J. and Li, Xiaoxiao and Thrampoulidis, Christos},
+  year          = {2025},
+  eprint        = {2505.18830},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2505.18830}
+}
+
+@misc{zhu2025negativereinforcement,
+  title         = {The Surprising Effectiveness of Negative Reinforcement in LLM Reasoning},
+  author        = {Zhu, Xinyu and Xia, Mengzhou and Wei, Zhepei and Chen, Wei-Lin and Chen, Danqi and Meng, Yu},
+  year          = {2025},
+  eprint        = {2506.01347},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2506.01347}
+}
+
+% ===== RLVR 低秩动力学 (net 更新低秩 = 集中正信号/脊, 与本文 neg 高秩相容) =====
+@misc{ye2026lowrank,
+  title         = {On the Implicit Reward Overfitting and the Low-rank Dynamics in RLVR},
+  author        = {Ye, Hao and Dang, Jisheng and Fang, Junfeng and Wang, Bimei and Zhang, Yizhou and Lv, Ning and Zhang, Wencan and Peng, Hong and Hu, Bin and Chua, Tat-Seng},
+  year          = {2026},
+  eprint        = {2605.06523},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2605.06523}
+}
+
+% ===== 主对照: RL 内禀稀疏子网络 (本文新主线锚) =====
+@misc{mukherjee2025subnetwork,
+  title         = {Reinforcement Learning Finetunes Small Subnetworks in Large Language Models},
+  author        = {Mukherjee, Sagnik and Yuan, Lifan and Hakkani-Tur, Dilek and Peng, Hao},
+  year          = {2025},
+  eprint        = {2505.11711},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2505.11711}
+}
+
+@misc{adewuyi2026multiticket,
+  title         = {The Multiple Ticket Hypothesis: Random Sparse Subnetworks Suffice for {RLVR}},
+  author        = {Adewuyi, Israel and Okibe, Solomon and Ivanov, Vladmir},
+  year          = {2026},
+  eprint        = {2602.01599},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2602.01599}
+}
+
+@misc{mukherjee2026needadam,
+  title         = {Do We Need {Adam}? Surprisingly Strong and Sparse Reinforcement Learning with {SGD} in {LLMs}},
+  author        = {Mukherjee, Sagnik and Yuan, Lifan and Jayasinha, Pavan and Hakkani-T\"ur, Dilek and Peng, Hao},
+  year          = {2026},
+  eprint        = {2602.07729},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2602.07729}
+}
+
+% zhu2026threegate — R14 correction. The previous entry gave title "Why RL Updates
+% Look Sparse: An Implicit Compass Drives Optimization Bias" with OpenReview id
+% Q4mF4tLGbf. Neither is verifiable: arXiv full-text search returns 0 hits for that
+% title, and both OpenReview APIs return 0 notes for that forum id. The 14 authors
+% below (arXiv-verified) contain all 13 previously listed authors in the same order,
+% so this is the same work under its real title. Upgrade to a NeurIPS proceedings
+% entry if the camera-ready is confirmed.
+@misc{zhu2026threegate,
+  title         = {The Path Not Taken: {RLVR} Provably Learns Off the Principals},
+  author        = {Zhu, Hanqing and Zhang, Zhenyu and Huang, Hanxian and Su, DiJia
+                   and Liu, Zechun and Zhao, Jiawei and Fedorov, Igor and
+                   Pirsiavash, Hamed and Sha, Zhizhou and Lee, Jinwon and
+                   Pan, David Z. and Wang, Zhangyang and Tian, Yuandong and
+                   Tai, Kai Sheng},
+  year          = {2025},
+  eprint        = {2511.08567},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2511.08567}
+}
+
+% ===== 稀疏下学习率 / 密度补偿 (20x 远超补偿的定量参照) =====
+@inproceedings{dey2024supar,
+  title     = {Sparse Maximal Update Parameterization: A Holistic Approach to Sparse Training Dynamics},
+  author    = {Dey, Nolan and Bergsma, Shane and Hestness, Joel},
+  booktitle = {Advances in Neural Information Processing Systems 37 (NeurIPS)},
+  pages     = {33836--33862},
+  year      = {2024},
+  doi       = {10.52202/079017-1066}
+}
+
+% ===== RLVR 专门的步长阈值理论 (Gradient Gap; Finding2 最贴近对位) =====
+@misc{suk2026gradientgap,
+  title         = {On the Optimization Dynamics of {RLVR}: Gradient Gap and Step Size Thresholds},
+  author        = {Suk, Joe and Duan, Yaqi},
+  year          = {2025},
+  eprint        = {2510.08539},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2510.08539}
+}
+
+% ===== 高学习率为何不炸: catapult / 大学习率相变 (主流竞争解释) =====
+@misc{lewkowycz2020catapult,
+  title         = {The Large Learning Rate Phase of Deep Learning: The Catapult Mechanism},
+  author        = {Lewkowycz, Aitor and Bahri, Yasaman and Dyer, Ethan and Sohl-Dickstein, Jascha and Gur-Ari, Guy},
+  year          = {2020},
+  eprint        = {2003.02218},
+  archivePrefix = {arXiv},
+  primaryClass  = {stat.ML},
+  url           = {https://arxiv.org/abs/2003.02218}
+}
+
+@inproceedings{cohen2021edgestability,
+  title     = {Gradient Descent on Neural Networks Typically Occurs at the Edge of Stability},
+  author    = {Cohen, Jeremy M. and Kaur, Simran and Li, Yuanzhi and Kolter, J. Zico and Talwalkar, Ameet},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2021},
+  eprint    = {2103.00065},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url       = {https://arxiv.org/abs/2103.00065}
+}
+
+% ===== top-k 稀疏 + error feedback (MaskError / TotalMaskError 的正主) =====
+@inproceedings{karimireddy2019errorfeedback,
+  title     = {Error Feedback Fixes {SignSGD} and other Gradient Compression Schemes},
+  author    = {Karimireddy, Sai Praneeth and Rebjock, Quentin and Stich, Sebastian U. and Jaggi, Martin},
+  booktitle = {Proceedings of the 36th International Conference on Machine Learning (ICML)},
+  year      = {2019},
+  url       = {https://proceedings.mlr.press/v97/karimireddy19a.html},
+  eprint        = {1901.09847},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{stich2018sparsified,
+  title     = {Sparsified {SGD} with Memory},
+  author    = {Stich, Sebastian U. and Cordonnier, Jean-Baptiste and Jaggi, Martin},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2018},
+  eprint    = {1809.07599},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url       = {https://arxiv.org/abs/1809.07599}
+}
+
+@inproceedings{richtarik2021ef21,
+  title     = {{EF21}: A New, Simpler, Theoretically Better, and Practically Faster Error Feedback},
+  author    = {Richt{\'a}rik, Peter and Sokolov, Igor and Fatkhullin, Ilyas},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2021},
+  eprint    = {2106.05203},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url       = {https://arxiv.org/abs/2106.05203}
+}
+
+@inproceedings{lin2018dgc,
+  title     = {Deep Gradient Compression: Reducing the Communication Bandwidth for Distributed Training},
+  author    = {Lin, Yujun and Han, Song and Mao, Huizi and Wang, Yu and Dally, William J.},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2018},
+  url       = {https://arxiv.org/abs/1712.01887},
+  eprint        = {1712.01887},
+  archivePrefix = {arXiv}
+}
+
+% ===== 内在维度奠基 (低维子空间 = 多票成功机制的根, 对照用) =====
+@inproceedings{li2018intrinsic,
+  title     = {Measuring the Intrinsic Dimension of Objective Landscapes},
+  author    = {Li, Chunyuan and Farkhoor, Heerad and Liu, Rosanne and Yosinski, Jason},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2018},
+  url       = {https://arxiv.org/abs/1804.08838},
+  eprint        = {1804.08838},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{aghajanyan2021intrinsic,
+  title     = {Intrinsic Dimensionality Explains the Effectiveness of Language Model Fine-Tuning},
+  author    = {Aghajanyan, Armen and Zettlemoyer, Luke and Gupta, Sonal},
+  booktitle = {Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  year      = {2021},
+  url       = {https://arxiv.org/abs/2012.13255},
+  eprint        = {2012.13255},
+  archivePrefix = {arXiv}
+}
+
+% ===== 彩票假说奠基 (原始 LTH, 对照用) =====
+@inproceedings{frankle2019lottery,
+  title     = {The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks},
+  author    = {Frankle, Jonathan and Carbin, Michael},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019},
+  url       = {https://arxiv.org/abs/1803.03635},
+  eprint        = {1803.03635},
+  archivePrefix = {arXiv}
+}
+
+% ===== 动态稀疏训练 / 坐标生存 (CoordinateSurvival) =====
+@inproceedings{evci2020rigl,
+  title     = {Rigging the Lottery: Making All Tickets Winners},
+  author    = {Evci, Utku and Gale, Trevor and Menick, Jacob and Castro, Pablo Samuel and Elsen, Erich},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning (ICML)},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/1911.11134},
+  eprint        = {1911.11134},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{you2020earlybird,
+  title     = {Drawing Early-Bird Tickets: Towards More Efficient Training of Deep Networks},
+  author    = {You, Haoran and Li, Chaojian and Xu, Pengfei and Fu, Yonggan and Wang, Yue and Chen, Xiaohan and Baraniuk, Richard G. and Wang, Zhangyang and Lin, Yingyan},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2020},
+  eprint    = {1909.11957},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url       = {https://arxiv.org/abs/1909.11957}
+}
+
+% ===== 同刊 (Neurocomputing) 文献：稀疏/子网络/剪枝粒度/自适应学习率 =====
+% 元数据经 Crossref journals/0925-2312 核实 (2026-07-30)，非 web 摘要推测。
+@article{zhu2025pruningreview,
+  title   = {A comprehensive review of network pruning based on pruning granularity and pruning time perspectives},
+  author  = {Zhu, Kehan and Hu, Fuyi and Ding, Yuanbing and Zhou, Wei and Wang, Ruxin},
+  journal = {Neurocomputing},
+  volume  = {626},
+  pages   = {129382},
+  year    = {2025},
+  doi     = {10.1016/j.neucom.2025.129382}
+}
+
+@article{ziv2021stochasticpruning,
+  title   = {Stochastic weight pruning and the role of regularization in shaping network structure},
+  author  = {Ziv, Yael and Goldberger, Jacob and Riklin Raviv, Tammy},
+  journal = {Neurocomputing},
+  volume  = {462},
+  pages   = {555--567},
+  year    = {2021},
+  doi     = {10.1016/j.neucom.2021.08.007}
+}
+
+@article{kamelianrad2026topographical,
+  title   = {Topographical sparse mapping: A neuro-inspired sparse training framework for deep learning models},
+  author  = {Kamelian Rad, Mohsen and Neri, Ferrante and Moschoyiannis, Sotiris and Bauer, Roman},
+  journal = {Neurocomputing},
+  volume  = {659},
+  pages   = {131740},
+  year    = {2026},
+  doi     = {10.1016/j.neucom.2025.131740}
+}
+
+@article{xie2023lotteryfewshot,
+  title   = {Exploring lottery ticket hypothesis in few-shot learning},
+  author  = {Xie, Yu and Sun, Qiang and Fu, Yanwei},
+  journal = {Neurocomputing},
+  volume  = {550},
+  pages   = {126426},
+  year    = {2023},
+  doi     = {10.1016/j.neucom.2023.126426}
+}
+
+@article{tong2022calibratingadam,
+  title   = {Calibrating the adaptive learning rate to improve convergence of {ADAM}},
+  author  = {Tong, Qianqian and Liang, Guannan and Bi, Jinbo},
+  journal = {Neurocomputing},
+  volume  = {481},
+  pages   = {333--356},
+  year    = {2022},
+  doi     = {10.1016/j.neucom.2022.01.014}
+}

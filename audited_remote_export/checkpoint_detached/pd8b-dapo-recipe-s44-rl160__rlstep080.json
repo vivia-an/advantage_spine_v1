@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104083886080,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-dapo-recipe-s44-rl160/global_step_80",
+  "file_count": 82,
+  "reported_aggregate_sha256": "d9e0963a86382cbecfd3baf2ec0ca21ff5fb78d25f0c4814ff1e0b906623fff0",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "7b1a3f4691e30f54a804845ee24456f16759f5cda78d858ce560cbe5f977ee54",
+  "reported_optimizer_state_sha256": "e6cc96a6e500ad58b0b5caaefe181e1a8bfcacca282dec99d4a26dc99b5500ec",
+  "reported_scheduler_state_sha256": "5245ffc8fe7275d9f62dea74a86d1a8c2bcf027a0ba9cc41a3c7fb5a49e05c9b",
+  "reported_trainer_extra_sha256": "4f762ce51958ed7f2e2daabd9f098c5837223aabc00a067b29e56ccc7f60b45a",
+  "rl_step": 80,
+  "run_id": "pd8b-dapo-recipe-s44-rl160"
+}

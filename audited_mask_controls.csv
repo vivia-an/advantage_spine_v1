@@ -1,0 +1,7 @@
+control,mean4
+Dynamic Spine,0.445
+Frozen Spine,0.430
+Dense-emergent oracle,0.440
+Static magnitude mask,0.420
+Random 40% mask,0.400
+Complement mask,0.350

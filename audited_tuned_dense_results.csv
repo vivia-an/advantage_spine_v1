@@ -1,0 +1,7 @@
+condition,mean4,seed_uncertainty,notes
+Untuned Dense 20x,0.340,three-seed factorial,matched AdamW constants
+Tuned Dense 20x,0.383,aggregate,light warmup/clip/beta1; not a full factorial cell
+Dense lambda0.1 20x,0.400,three-seed factorial,matched AdamW constants
+Mask-only 20x,0.410,three-seed factorial,matched AdamW constants
+Dense 1x,0.426,three-seed factorial,matched AdamW constants
+Recipe 20x,0.445,three-seed factorial,matched AdamW constants

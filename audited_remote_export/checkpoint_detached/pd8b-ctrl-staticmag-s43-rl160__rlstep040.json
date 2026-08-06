@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104041943040,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-ctrl-staticmag-s43-rl160/global_step_40",
+  "file_count": 82,
+  "reported_aggregate_sha256": "30b1fdc5a537e15e3237b5e8e76fcbb726bbac212cb72e40c1466c64a3acf707",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "727336bb05c6b70ea6358e5470ec5536275df1eeeee23c89dd11a2bf76363e05",
+  "reported_optimizer_state_sha256": "117ffbc2e2deb6ea96379d8e73f050f574bd639e2d768e5f5901965fb0d005f1",
+  "reported_scheduler_state_sha256": "5bf735b5ea5479cc73daadb0db58badb760f5d509b9e0f9b1d2cc18ef7329fae",
+  "reported_trainer_extra_sha256": "42e83d74269b67c3cf63a31cb2d8b2b53e0b090d6a94564038e62dc6092a8ff5",
+  "rl_step": 40,
+  "run_id": "pd8b-ctrl-staticmag-s43-rl160"
+}

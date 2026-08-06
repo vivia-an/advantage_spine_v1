@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104167772160,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-dense-lam100-lr05-s44-rl160/global_step_160",
+  "file_count": 82,
+  "reported_aggregate_sha256": "a0727d967239adcb1f269dd2bb6975318ec924ce78eaaceeae25b75ea2e234d5",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "0c0e817a08ee380ae8d07e05ec8374ade0a42f4e2869edc10c4d8e7707720903",
+  "reported_optimizer_state_sha256": "35d481c707f7ea49c69d549e434f99c18d8e94900e6c3418c8aed89f9b4dd88f",
+  "reported_scheduler_state_sha256": "b73a1fd12dcb163cfd6ade872e66b18c00a4453635ca63f7e2c0d1f30067e431",
+  "reported_trainer_extra_sha256": "aae81c7b0eb3c975a47715e0be2becca4c3dd61c848d59bda6a709451d8b5a01",
+  "rl_step": 160,
+  "run_id": "pd8b-dense-lam100-lr05-s44-rl160"
+}

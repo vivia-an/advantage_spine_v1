@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104041943040,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-ctrl-random040-s44-rl160/global_step_40",
+  "file_count": 82,
+  "reported_aggregate_sha256": "dc914a1ff6d1ae8af00abed6e6627e30eb0132c09d1377589d28584ae274fd15",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "d88d7acf106551404015aad5d26361c232c3eda5577bc6821ec41922bac3ded2",
+  "reported_optimizer_state_sha256": "3c33138426f34321914a0bc362ea330f891c02018ee1d0b84c5cf1bed8a15368",
+  "reported_scheduler_state_sha256": "b92ff9d46526035c71c451b678d19c52b0ee9def23eea6881024f2f2e1fdc4aa",
+  "reported_trainer_extra_sha256": "3cb4442c4e21b323bb12d055ec5e0148c6cb1c0c909adec1db2cc5a3ab900bbd",
+  "rl_step": 40,
+  "run_id": "pd8b-ctrl-random040-s44-rl160"
+}

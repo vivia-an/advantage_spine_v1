@@ -1,0 +1,37 @@
+{
+  "title": "The Advantage Spine: Dynamic Coordinate Selection for High-Rate RLVR (artifact v1.0)",
+  "upload_type": "software",
+  "description": "Immutable public release for the Neurocomputing manuscript. Contains manuscript sources, SparseAdamW method drop-in, audited aggregate CSVs, verification scripts, and an author-attested audited_remote_export package. Excludes synthetic/reconstructed staging trees. Canonical GitHub: https://github.com/vivia-an/advantage_spine_v1. Local verification does not remount remote raw checkpoints.",
+  "creators": [
+    {
+      "name": "Li, Shikai",
+      "affiliation": "West China Hospital, Sichuan University"
+    },
+    {
+      "name": "Cai, Qingsong",
+      "affiliation": "Sichuan University"
+    },
+    {
+      "name": "Shi, Rui",
+      "affiliation": "West China Hospital, Sichuan University"
+    }
+  ],
+  "keywords": [
+    "RLVR",
+    "sparse optimization",
+    "learning-rate stability",
+    "large language models",
+    "Neurocomputing"
+  ],
+  "access_right": "open",
+  "license": "other-open",
+  "version": "1.0.0",
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/vivia-an/advantage_spine_v1",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}

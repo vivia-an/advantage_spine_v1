@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104167772160,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-ctrl-complement-s44-rl160/global_step_160",
+  "file_count": 82,
+  "reported_aggregate_sha256": "a82946808f2e84be65ea46147065c4de1812955c69fd05d8c78d013915df6572",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "13747ee048dc814b382109508da9127302b28d8ad7b95da2a58c1f21da9ab2cd",
+  "reported_optimizer_state_sha256": "dc5acfc8a0e6baf80e4d5ac6cea1ee7588aac56ac433de9d43297a8ed705f8d5",
+  "reported_scheduler_state_sha256": "5ea0e136a747475aee3b8ee08f77d485030eb9e2b9c4d26f9c015d5692bb571c",
+  "reported_trainer_extra_sha256": "0b86337793a15ca1263a0e5e620d5ed76b8674c44c4ae364c582c8f2fb10e1bb",
+  "rl_step": 160,
+  "run_id": "pd8b-ctrl-complement-s44-rl160"
+}

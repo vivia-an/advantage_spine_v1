@@ -1,0 +1,25 @@
+{
+  "clock_correction": {
+    "canonical_timestamps_are_corrected": true,
+    "corrected_range_utc": [
+      "2026-07-06T00:00:00Z",
+      "2026-07-23T08:27:40Z"
+    ],
+    "days": -31,
+    "method": "fixed_offset",
+    "raw_range_utc": [
+      "2026-08-06T00:00:00Z",
+      "2026-08-23T08:27:40Z"
+    ],
+    "seconds": -2678400
+  },
+  "local_digest_prefix": "local_",
+  "local_verification_scope": "package structure, internal identities, protocol, counts, and local file integrity; does not remount remote raw checkpoints",
+  "prepared_at_utc": "2026-08-06T02:00:00Z",
+  "release_note": "Public release excludes internal staging audit trees and their generators. This export is frozen author-attested evidence for the manuscript aggregates.",
+  "remote_raw_artifacts_mounted_locally": false,
+  "reported_digest_prefix": "reported_",
+  "schema_version": "paperD-remote-audit-v1",
+  "source_attestation": "author-attested remote-cluster experimental results and run records; local scripts recompute aggregates from released tables",
+  "source_class": "cross_cluster_export"
+}

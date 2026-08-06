@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104167772160,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-dapo-dense-s43-rl160/global_step_160",
+  "file_count": 82,
+  "reported_aggregate_sha256": "29771799d8eff459e14b57757abd873f47156cde57922f80af4ba28040ac0380",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "43918198ec0fd60180774435723ade43bc8f772b8b2d84a6c9c2157bcd44ae8f",
+  "reported_optimizer_state_sha256": "dfbed6775bab368feebc577523b5b800e361077153f2a0b87e093248ba04c890",
+  "reported_scheduler_state_sha256": "6dbc0be8bdbe02bead19581b74999a7e76c884c6f45af3e90c0f200307968128",
+  "reported_trainer_extra_sha256": "0990aeaa59fbc599cd3ec37590c3135eee553179b21d13a10b2d74276a445582",
+  "rl_step": 160,
+  "run_id": "pd8b-dapo-dense-s43-rl160"
+}

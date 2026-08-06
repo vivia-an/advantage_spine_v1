@@ -1,0 +1,13 @@
+Model, dataset, and software terms
+
+Qwen3-8B, Qwen3-1.7B, DAPO-Math-17K, AIME 2025, and VERL are used under
+Apache License 2.0. Llama-3.1-8B is used under the Llama 3.1 Community License
+and Acceptable Use Policy. OlympiadBench is distributed by its official
+repository under the MIT License.
+
+The referenced HuggingFaceH4 cards for MATH500 and AIME 2024 do not declare a
+license. The accompanying artifact therefore does not redistribute their
+problem text; it releases dataset identifiers, file hashes, prompt/sample IDs,
+integer counts, and aggregate evaluation results. Model weights and derivatives
+remain subject to their respective upstream terms. See LICENSE_AND_DATA_USE.md
+for the resource-by-resource matrix and upstream locations.

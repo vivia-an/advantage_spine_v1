@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104167772160,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pdllama8b-recipe-s44-rl160/global_step_160",
+  "file_count": 82,
+  "reported_aggregate_sha256": "59503cc1cca54aeb53dee322bfb6029a016f45b6e7d4c77b8d69fe676be3585b",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "27f9ddfc9f581da808b9f9a0cf48a524de7b51c7dde15227cf4e747a927a51dc",
+  "reported_optimizer_state_sha256": "99f032a9582e70c1a033ecb71d0c8a43be1177f6b8678a61e6ce16d70ffd0093",
+  "reported_scheduler_state_sha256": "8387fc2344e9281504c8ab81970c4b4d14bcca2e8aa2403d3f2d3b5edec822e1",
+  "reported_trainer_extra_sha256": "84b091c76985a351e0e862d9f615b0af058ebeb8cb1f7743bc9e0c6c44215e09",
+  "rl_step": 160,
+  "run_id": "pdllama8b-recipe-s44-rl160"
+}

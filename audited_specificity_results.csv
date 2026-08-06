@@ -1,0 +1,14 @@
+comparison,left_seed,right_seed,jaccard,matched
+spine_dense,42,42,0.604,1
+spine_dense,42,43,0.418,0
+spine_dense,42,44,0.409,0
+spine_dense,43,42,0.431,0
+spine_dense,43,43,0.589,1
+spine_dense,43,44,0.414,0
+spine_dense,44,42,0.427,0
+spine_dense,44,43,0.423,0
+spine_dense,44,44,0.607,1
+dense_dense,42,43,0.414,
+dense_dense,42,44,0.423,
+dense_dense,43,44,0.419,
+random,,,0.250,

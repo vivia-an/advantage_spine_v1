@@ -1,0 +1,22 @@
+Data availability
+
+Audited seed-level factorial results, learning-rate audit records, support
+identity measurements including the full cross-seed specificity matrix,
+Qwen3-1.7B per-seed benchmark decomposition, mask controls, stability
+diagnostics, transfer
+aggregates, analysis scripts, and figure generators are included in the
+accompanying repository: https://github.com/vivia-an/advantage_spine_v1
+
+The repository ships verify_numbers.py, which recomputes all factorial means,
+sample standard deviations, the paired confidence interval, principal
+contrasts, and cross-file consistency checks. It also includes the normalized
+cross-cluster audit export: run identities, protocol metadata, reported
+artifact digests, corrected timestamps, and a locally recomputed package
+manifest. PROVENANCE.json distinguishes source-reported digests from files
+available for local byte-level verification. Checkpoints are available only
+when redistribution is permitted by the corresponding upstream model and data
+terms. LICENSE_AND_DATA_USE.md records the resource-level license and
+redistribution boundary. In particular, the artifact does not redistribute
+MATH500 or AIME 2024 problem text because the referenced dataset cards do not
+declare a license; it releases their hashes, identities, counts, and aggregate
+results instead.

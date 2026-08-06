@@ -1,0 +1,11 @@
+actor_rollout_ref:
+  actor:
+    optim:
+      optimizer: SparseAdamW
+      optimizer_impl: verl.utils.optim.sparse_adamw
+      lr: 1.0e-4
+      sparse_mode: topk
+      sparse_topk_ratio: 0.4
+      sparse_min_numel: 4096
+      betas: [0.9, 0.999]
+      weight_decay: 0.01

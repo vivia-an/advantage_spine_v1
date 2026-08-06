@@ -1,0 +1,9 @@
+Highlights
+The Advantage Spine: Dynamic Coordinate Selection for High-Rate RLVR
+
+- A 16-cell, three-seed factorial isolates the joint high-rate effect.
+- Dense RLVR loses 0.086 Mean4 at 20x; the Spine gains 0.019.
+- Nominal paired 95% CI [0.0124, 0.0256] (n=3).
+- Matched support exceeds dense–dense Jaccard by 0.181.
+
+% Elsevier highlights: four bullets, each below 85 characters.

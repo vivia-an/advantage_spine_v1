@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "scope": ["Qwen3-8B factorial", "Qwen3-1.7B transfer"],
+  "timeline": {
+    "rl_start_step": 0,
+    "rl_final_step": 160,
+    "rl_optimizer_steps": 160,
+    "evaluation_steps": [40, 80, 120, 160],
+    "checkpoint_steps": [40, 80, 120, 160],
+    "top04_mask_steps": [40, 80, 120, 160],
+    "main_result_step": 160,
+    "sft_source_step_counts_as_rl": false
+  },
+  "initialization": {
+    "description": "model-only initialization from an SFT checkpoint",
+    "normal_launch_resume_mode": "disable",
+    "loaded": ["model"],
+    "not_loaded": ["optimizer", "lr_scheduler", "rl_global_step", "dataloader_position", "rng_state", "trainer_extra"],
+    "optimizer_initialized_at_rl_step": 0,
+    "scheduler_initialized_at_rl_step": 0
+  },
+  "interruption_recovery": {
+    "description": "full-state resume within the same run only",
+    "loaded": ["model", "optimizer", "lr_scheduler", "trainer_extra", "rl_global_step", "dataloader_position", "rng_state"],
+    "identity_keys": ["model", "factorial_cell", "seed", "output_directory"],
+    "lr_must_equal_pre_interruption_lr": true,
+    "cross_condition_resume": false,
+    "cross_seed_resume": false,
+    "auto_load_other_latest_checkpoint": false,
+    "overwrite_existing_checkpoint": false
+  },
+  "learning_rates": {
+    "1": 0.000005,
+    "5": 0.000025,
+    "10": 0.000050,
+    "20": 0.000100,
+    "scheduler": "constant",
+    "warmup_steps": 0,
+    "warmup_ratio": 0.0
+  },
+  "decoding": {
+    "train_rollout": {
+      "do_sample": true,
+      "max_prompt_length": 1024,
+      "max_response_length": 8192,
+      "n": 4,
+      "temperature": 1.0,
+      "top_k": -1,
+      "top_p": 1.0,
+      "canonical_sha256": "5bf4b8a584e9f00a61af515d06a0a8b8aac84985c66eedb0a844c278781f76c3"
+    },
+    "evaluation": {
+      "protocol_name": "PASP core-four avg@32",
+      "benchmarks": ["math500", "aime24", "aime25", "olympiad_math_en"],
+      "metric": "avg@32 accuracy",
+      "do_sample": true,
+      "max_response_length": 8192,
+      "n": 32,
+      "temperature": 0.6,
+      "top_k": -1,
+      "top_p": 1.0,
+      "unique_prompts": {"math500": 500, "aime24": 30, "aime25": 30, "olympiad_math_en": 581},
+      "completions": {"math500": 16000, "aime24": 960, "aime25": 960, "olympiad_math_en": 18592},
+      "aime_preexpanded_prompts": true,
+      "canonical_json": "{\"benchmarks\":[\"math500\",\"aime24\",\"aime25\",\"olympiad_math_en\"],\"do_sample\":true,\"max_response_length\":8192,\"metric\":\"avg@32_accuracy\",\"n\":32,\"temperature\":0.6,\"top_k\":-1,\"top_p\":1.0}",
+      "canonical_sha256": "f5aa2ba823c0d1f6c9adf6cd84e3ccb1b22f86f71882b47d81d13dbc3918c7ec"
+    }
+  },
+  "optimizer": {
+    "dense": "AdamW",
+    "top04": "SparseAdamW",
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-8,
+    "weight_decay": 0.01,
+    "decoupled_weight_decay": true,
+    "global_gradient_clip": 1.0
+  },
+  "rlvr": {
+    "algorithm": "GRPO",
+    "ppo_clip_low": 0.2,
+    "ppo_clip_high": 0.2,
+    "dual_clip_c": 3.0,
+    "kl_loss": true,
+    "kl_coefficient": 0.001,
+    "kl_type": "low-var KL",
+    "kl_control": "fixed",
+    "kl_in_reward": false,
+    "reference_model": "frozen",
+    "entropy_coefficient": 0.0,
+    "advantage_centering": "group mean",
+    "advantage_scaling": "group standard deviation",
+    "normalization_epsilon": 1e-6,
+    "norm_adv_by_std_in_grpo": true,
+    "cross_batch_normalization": false
+  },
+  "batch_and_lengths": {
+    "prompt_batch": 256,
+    "generations_per_prompt": 4,
+    "rollout_sequences_per_step": 1024,
+    "ppo_minibatch": 256,
+    "ppo_microbatch_per_gpu": 1,
+    "gpu_count": 8,
+    "gradient_accumulation": 32,
+    "actor_global_minibatch": 256,
+    "max_prompt_length": 1024,
+    "max_response_length": 8192,
+    "max_total_sequence_length": 9216,
+    "rollout_tensor_parallel": 2,
+    "rollout_gpu_memory_utilization": 0.75,
+    "precision": "BF16"
+  },
+  "mask_archive": {
+    "applies_to": "Top-0.4 only",
+    "run_count": 24,
+    "files_per_run": 4,
+    "expected_file_count": 96,
+    "filename_pattern": "masks/mask_rlstepNNN.safetensors",
+    "realized_density": 0.393,
+    "hash_collision_count": 0,
+    "density_error_count": 0,
+    "canonical_representation": "bit-packed bitmap",
+    "physical_encoding": "bitpacked_lsb0",
+    "explicit_int64_indices_stored": false,
+    "derived_index_coverage": 1.0,
+    "actual_file_checksums_synced": false
+  },
+  "environment": {
+    "pytorch": "2.7.0a0+79aa17489c.nv25.04",
+    "cuda_runtime": "12.9",
+    "cudnn": "9.9.0",
+    "gpu_count": 8,
+    "target_gpu_memory_gb": 141,
+    "actual_manifest_synced": false,
+    "required_missing_fields": ["gpu_model", "gpu_uuids", "nvidia_driver", "cuda_driver_api", "nccl_version", "vllm_version", "verl_git_commit", "repository_git_commit", "hostname", "kernel_version", "container_image_digest"]
+  },
+  "artifact_sync": {
+    "output_root": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160",
+    "present_in_current_checkout": false,
+    "per_run_actual_checksums_synced": false,
+    "normalized_cross_cluster_audit_present": true,
+    "normalized_audit_evidence_level": "source-attested with local package-integrity verification",
+    "remote_raw_artifacts_mounted_locally": false
+  }
+}

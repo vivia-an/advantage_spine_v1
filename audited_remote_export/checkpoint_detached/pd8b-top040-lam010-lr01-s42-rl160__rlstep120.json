@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104125829120,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-top040-lam010-lr01-s42-rl160/global_step_120",
+  "file_count": 82,
+  "reported_aggregate_sha256": "9482f3e4382d7fcbeb433704b45db353dbea22d86d25a6dbb9d0cc35c123a23d",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "9c9e226fb0a4ff4a0ae89758fc3bbb15600b417fdff551d608edb07cb895c512",
+  "reported_optimizer_state_sha256": "bd285f1d9772a1b7f40e62847daece4381e6851ef1dd2fed39a00ce9b62d9989",
+  "reported_scheduler_state_sha256": "031cbd4d4c09b997647d0eabd3979f80c7736d59c41eba08d7deb3ae95a5a69b",
+  "reported_trainer_extra_sha256": "1715fa13c1eece80f61210feef081ba9b5764388bc29718715f7d74c55e64d57",
+  "rl_step": 120,
+  "run_id": "pd8b-top040-lam010-lr01-s42-rl160"
+}

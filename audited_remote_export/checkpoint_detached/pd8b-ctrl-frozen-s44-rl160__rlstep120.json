@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104125829120,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-ctrl-frozen-s44-rl160/global_step_120",
+  "file_count": 82,
+  "reported_aggregate_sha256": "63c30f6cdc46327bcf197943d762277ce51baafe4ccd3caa432460b19f2e721a",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "b8b55c1264a6a6194f19eb8fa7f7c3cb9b9d2a44155ff73ba90b2627f7d66f94",
+  "reported_optimizer_state_sha256": "451a37e1e13f98f4f0ab5c11b6fcf93aeec3e198597dfcd1393a651115fb04fc",
+  "reported_scheduler_state_sha256": "f94cc694f74b7cc84b4c436eafd2f101ae596593add6450216838c57ec1ee6b9",
+  "reported_trainer_extra_sha256": "658bf9b548924e1fda318e97217aa55517ad95a91742a4422137fad07d0699f7",
+  "rl_step": 120,
+  "run_id": "pd8b-ctrl-frozen-s44-rl160"
+}

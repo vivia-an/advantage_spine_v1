@@ -1,0 +1,14 @@
+{
+  "aggregate_size_bytes": 104041943040,
+  "checkpoint_directory": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160/pd8b-ctrl-oracle-s43-rl160/global_step_40",
+  "file_count": 82,
+  "reported_aggregate_sha256": "4837f99545682fc664a5e6613748035648124177c38deac6b5aef419fcaece8e",
+  "reported_checksum_verified": true,
+  "reported_directory_exists": true,
+  "reported_model_state_sha256": "d473fb00cd591571bfa3e9c42113908538b040ef58ae127d65ad8c71b1881a7e",
+  "reported_optimizer_state_sha256": "8e85141850c9a50b8eec442a8d2af9031a73b3c7ce7714010a48e92c36ba285e",
+  "reported_scheduler_state_sha256": "92e53743109f85b46175cbee34038174ec3e164b544228ce098c336d8b3d3299",
+  "reported_trainer_extra_sha256": "c082807e1b4ff702f703e107c7ff7523f371d6d9a51f6bdccdd1ab1f837f0172",
+  "rl_step": 40,
+  "run_id": "pd8b-ctrl-oracle-s43-rl160"
+}

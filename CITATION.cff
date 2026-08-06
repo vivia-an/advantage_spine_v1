@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: "The Advantage Spine: Dynamic Coordinate Selection for High-Rate RLVR"
+message: If you use this artifact, please cite it and the accompanying paper.
+type: software
+authors:
+  - family-names: Li
+    given-names: Shikai
+    email: lishikai@wchscu.edu.cn
+    affiliation: West China Hospital, Sichuan University
+  - family-names: Cai
+    given-names: Qingsong
+    affiliation: Sichuan University
+  - family-names: Shi
+    given-names: Rui
+    affiliation: West China Hospital, Sichuan University
+version: "1.0.0"
+date-released: "2026-08-06"
+license: Apache-2.0
+repository-code: "https://github.com/vivia-an/advantage_spine_v1"
+url: "https://github.com/vivia-an/advantage_spine_v1"
+identifiers:
+  - type: url
+    value: "https://github.com/vivia-an/advantage_spine_v1"
+    description: "Public GitHub repository"
+abstract: >
+  Open implementation and audited tables for the Advantage Spine manuscript:
+  SparseAdamW top-k coordinate selection with negative-channel down-weighting
+  for high-rate RLVR, plus verification scripts and an author-attested audit export.
+keywords:
+  - reinforcement learning with verifiable rewards
+  - sparse optimization
+  - learning-rate stability
+  - large language models
