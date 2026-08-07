@@ -31,4 +31,4 @@ trails the Spine recipe at 0.445. The dense-1× vs recipe-20× interval is a
 
 ## Citation
 
-See `CITATION.cff`. After Zenodo deposit, replace any DOI placeholder.
+See `CITATION.cff`. This GitHub repository is the canonical public archive.

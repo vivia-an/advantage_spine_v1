@@ -3,7 +3,7 @@
 Date: 2026-08-06
 
 ## Scope
-Clean public snapshot for Neurocomputing submission / code+artifact deposit.
+Clean public snapshot for the Neurocomputing submission and public GitHub artifact.
 
 ## Removed relative to working tree
 - synthetic_expected_audit/ (+ generator)
@@ -17,6 +17,5 @@ Clean public snapshot for Neurocomputing submission / code+artifact deposit.
 - Export: author-attested; local verify ≠ remote remount
 - AI disclosure: Cursor named with purpose (Elsevier template)
 
-## Zenodo
-Upload this directory (or the sibling zip). Replace DOI placeholders in
-CITATION.cff and .zenodo.json after deposit.
+## Public archive
+The canonical public archive is https://github.com/vivia-an/advantage_spine_v1.
