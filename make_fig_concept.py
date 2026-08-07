@@ -93,9 +93,9 @@ ax.text(34.8, 36.1, "B", fontsize=8.2, fontweight="bold", color=INK,
 ax.text(38.8, 36.2, "Dynamic Advantage Spine", fontsize=8.1,
         fontweight="bold", color=INK, va="center")
 matrix_stack(38.0, selected=True)
-ax.text(46.9, 4.2, "per-tensor top 40% of pre-mask AdamW update",
+ax.text(46.9, 5.2, "per-tensor top 40% of pre-mask AdamW update",
         ha="center", fontsize=6.1, color=BODY)
-ax.text(46.9, 1.45, "support refreshed every optimization step",
+ax.text(46.9, 2.6, "support refreshed every optimization step",
         ha="center", fontsize=6.1, color=AMBER, fontweight="bold")
 
 arrow(57.3, 66.0, "evaluate", "matched seeds")
