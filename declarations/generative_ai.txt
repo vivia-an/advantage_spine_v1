@@ -1,11 +1,14 @@
 Declaration of generative AI and AI-assisted technologies in the writing process
 
-During the preparation of this work, the authors used Cursor (AI-assisted
-coding and writing environment with large language model assistance) in order
-to polish English phrasing, restructure selected sentences for clarity, and
-assist with LaTeX formatting. After using this tool, the authors reviewed and
-edited the content as needed and take full responsibility for the content of
-the published article. No generative AI system was used to invent experimental
-data, numerical results, tables, or scientific figures; the graphical abstract
-and manuscript figures were produced with conventional plotting code under
-author control.
+During the preparation of this work, the authors used Cursor and OpenAI Codex
+(AI-assisted coding and writing tools) to improve English phrasing and
+manuscript organization, assist with LaTeX formatting, and support the
+development and review of plotting and consistency-checking code. The authors
+reviewed and edited all AI-assisted outputs, independently verified the
+references, data-derived quantities, and scientific claims, and take full
+responsibility for the content of the published article. No generative AI
+system was used to create or alter experimental observations or to fabricate
+data, numerical results, tables, or scientific figures. The graphical abstract
+and manuscript figures were rendered from author-verified data using
+conventional plotting code; any AI-assisted code was reviewed and executed
+under author control.
