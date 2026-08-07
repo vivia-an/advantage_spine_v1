@@ -1,72 +1,56 @@
-Cover Letter — Neurocomputing submission
-Corresponding author: Rui Shi
-First author e-mail: lishikai@wchscu.edu.cn
-[Complete date, Rui Shi's corresponding e-mail, any required street/postcode fields, and optional ORCIDs]
+August 7, 2026
 
 Dear Editor,
 
 We submit “The Advantage Spine: Dynamic Coordinate Selection for High-Rate
 RLVR” for consideration as a Research Paper in Neurocomputing.
 
-The paper studies optimization dynamics in reinforcement learning with
-verifiable rewards. Its main evidence is a 2×2×4 factorial on
-Qwen3-8B: dense versus dynamic top-40% updates, negative-advantage weight 1.0
-versus 0.1, and four learning-rate multipliers. Every one of the 16 cells has
-three matched seeds, with agreement among requested, optimizer, scheduler, and
-logged learning rates. Evaluation uses a fixed four-benchmark protocol.
+This manuscript studies whether the learning-rate range of reinforcement
+learning with verifiable rewards can be enlarged without amplifying every
+coordinate of the dense optimizer update. We introduce the Advantage Spine,
+which combines negative-advantage down-weighting with dynamic per-tensor
+top-40% selection of the pre-mask AdamW update. The central evidence is a
+complete 2×2×4 factorial on Qwen3-8B that crosses mask presence,
+negative-channel weight, and four learning-rate multipliers, with three matched
+seeds in every cell.
 
-Dense training falls from 0.426 to 0.340 Mean4 between 1× and 20×. The joint
-Advantage Spine recipe rises from 0.426 to 0.445. Its paired gain over dense 1×
-is 0.019 with a nominal 95% paired t interval of [0.0124, 0.0256] for the
-endpoint contrast after the full ladder. Neither intervention alone recovers
-the dense 1× reference at 20×. The selected 39.3% of coordinates retain
-85.0% of update energy. Matched Spine–dense-emergent Jaccard is 0.600±0.010,
-compared with 0.420±0.008 for mismatched seeds and 0.419±0.005 for dense–dense
-reproducibility; the per-seed specificity gain is 0.180±0.012. Mask controls
-and transfer to DAPO, Qwen3-1.7B, and Llama3.1-8B support a non-arbitrary,
-protocol-dependent effect.
+Dense training decreases from 0.426 to 0.340 Mean4 between 1× and 20×, whereas
+the joint recipe increases from 0.426 to 0.445. Its paired gain over dense 1×
+is 0.019, with a nominal 95% paired interval of [0.0124, 0.0256]. A lightly
+tuned dense 20× arm recovers to 0.383 but remains below both dense 1× and the
+Spine recipe. The selected 39.3% of coordinates retain 85.0% of update energy.
+Matched Spine–dense-emergent support reaches 0.600±0.010 Jaccard, compared
+with 0.420±0.008 for mismatched seeds and 0.419±0.005 for dense–dense pairs.
+The per-seed specificity gain is 0.180±0.012. Mask controls and transfers to
+DAPO, Qwen3-1.7B, and Llama3.1-8B provide
+additional evidence for a non-arbitrary, protocol-dependent high-rate
+operating region.
 
-The accompanying open repository
-(https://github.com/vivia-an/advantage_spine_v1) contains the method
-implementation, seed-level results, resolved configurations, checkpoint and
-mask identities, and scripts that recompute every reported aggregate.
-The manuscript reports the negative factorial interaction and treats 20× as
-the largest tested rate rather than a universal boundary.
+The work fits Neurocomputing through its focus on neural optimization,
+learning dynamics, dynamic sparse updates, and large-model training. The
+manuscript distinguishes step-wise optimizer-update selection from permanent
+weight pruning. It reports the full factorial interaction, treats 20× as the
+largest tested rate rather than a universal stability boundary, and does not
+claim superiority over every retuned dense optimizer.
 
-We also address the apparent tension in the negative-gradient literature.
-Rather than claiming that negative samples are generally harmful, the complete
-LR ladder shows a step-size-conditional effect: global attenuation changes
-Mean4 by only +0.002 at 1× but protects by +0.060 at 20×. This reconciles useful
-negative-sample reinforcement with the risk of amplifying a conflict-prone
-high-rate coordinate tail.
+The public repository at
+https://github.com/vivia-an/advantage_spine_v1 contains the method
+implementation, manuscript, result tables, protocol metadata, and verification
+scripts.
 
-The work fits Neurocomputing through its focus on neural optimization, dynamic
-sparse updates, reproducible learning dynamics, and large-model training. The
-manuscript distinguishes optimizer-update sparsity from permanent weight
-pruning and connects the result to learning-rate stability and dynamic sparse
-training.
+This manuscript is original, has been approved by all authors, and is not under
+consideration elsewhere. The authors declare no competing interests and no
+specific external funding. Use of AI-assisted tools during manuscript
+preparation is disclosed in the manuscript; the authors reviewed the resulting
+text and code, independently verified the references and numerical results,
+and take full responsibility for the submitted work.
 
-We state the experimental boundary directly. All primary runs end after 160
-RL optimizer steps on mathematical reasoning tasks. A lightly tuned dense 20×
-arm (warmup / gradient clipping / β1) recovers Mean4 from 0.340 to 0.383 but
-still trails dense 1× (0.426) and the Spine recipe at 20× (0.445; gap 0.062).
-Accordingly, the paper claims a matched-protocol high-rate operating region,
-not universal superiority over every retuned dense optimizer. The artifact also
-reports hardware, compute scope, step-time and memory overhead, and upstream
-model, data, and software terms.
-
-The authors declare no competing interest and no specific external funding.
-The manuscript is original, approved by all authors, and not under review
-elsewhere. During manuscript preparation the authors used Cursor (AI-assisted
-coding and writing environment with large language model assistance) to polish
-English phrasing, restructure selected sentences, and assist with LaTeX
-formatting; the authors reviewed all AI-assisted text and verified every
-reported numerical result. No generative AI system was used to invent data,
-tables, or scientific figures.
+Thank you for considering our manuscript.
 
 Sincerely,
-Rui Shi
 
-Enclosures: main_ne.pdf; highlights.txt; graphical_abstract.pdf/.png; result
-tables; verification export; LICENSE_AND_DATA_USE.md; vector figures
-and generators; bibliography; declarations.
+Rui Shi
+Corresponding author
+West China Hospital, Sichuan University
+Chengdu, Sichuan, China
+Email: [to be supplied before submission]
