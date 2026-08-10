@@ -15,6 +15,8 @@ Repository: https://github.com/vivia-an/advantage_spine_v1
 - `verify_numbers.py` / `verify_remote_audit.py` — consistency guards
 - `audited_remote_export/` — author-attested cross-cluster export
 - `main_ne.tex` — manuscript source (Elsevier `elsarticle` 5p)
+- `submission_metadata.txt` — verified paste-ready author metadata; unknown
+  system-only contact fields are explicitly reserved for author input
 - figures, highlights, cover letter, declarations
 
 ## Quick verify

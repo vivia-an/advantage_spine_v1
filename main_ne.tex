@@ -284,7 +284,7 @@ without matched-seed uncertainty and is not treated as a factorial cell.
 
 \section{Results}\label{sec:results}
 \subsection{The two advantage channels share a conflict-prone tail}
-Positive and negative channels are each active on 4.8\% of coordinates. Their
+Across three seeds, positive and negative channels are each active on 4.8\% of coordinates. Their
 measured shared support is 1.7\%, compared with $0.048^2=0.23\%$ under an
 independence reference, a $7.4\times$ enrichment. On the shared support,
 48\% of signs agree and 52\% conflict. The positive and negative update
@@ -297,7 +297,8 @@ negative-sample reinforcement should be removed.
 \centering\includegraphics[width=.98\linewidth]{fig_contam.pdf}
 \caption{\textbf{Positive and negative channels occupy overlapping,
 conflict-prone coordinates.} The 1.7\% overlap is $7.4\times$ an independence
-reference; signs conflict on 52\% of the shared support.}
+reference; signs conflict on 52\% of the shared support. Values are three-seed
+means; enrichment is the ratio of aggregate quantities.}
 \label{fig:contam}
 \end{figure}
 
@@ -313,6 +314,26 @@ The joint recipe instead rises from 0.426 at $1\times$ to 0.445 at $20\times$.
 At the endpoint, its gain is 0.105 over dense $20\times$ and 0.019 over dense
 $1\times$. The three seed-paired gains over dense $1\times$ are 0.020, 0.016,
 and 0.021, giving a nominal 95\% paired interval $[0.0124,0.0256]$.
+
+\begin{table}[t]
+\centering
+\caption{Primary Qwen3-8B benchmark decomposition at RL step 160, aggregated
+over three matched seeds. Benchmark columns and Mean4 are independently
+rounded to three decimals.}
+\label{tab:primary-components}
+\scriptsize\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{lrrrrr}
+\toprule Condition & Math500 & AIME24 & AIME25 & Olympiad & Mean4\\
+\midrule
+Dense $1\times$ & .762 & .227 & .200 & .513 & .426\\
+Recipe $20\times$ & .800 & .240 & .210 & .530 & .445\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The recipe improves every benchmark component, including Math500 and
+Olympiad; its Mean4 gain is therefore not driven solely by the two smaller
+AIME sets.
 
 \begin{figure*}[t]
 \centering\includegraphics[width=.72\textwidth]{fig_amplify.pdf}
@@ -382,8 +403,8 @@ reward $-0.150$, KL loss 0.090, entropy 0.150, and response clip ratio 0.650.
 Neither endpoint meets the operational criteria used in this paper for a run
 failure, numerical collapse, or policy collapse; Dense $20\times$ is classified
 as severe performance degradation.
-The recipe's benchmark components are Math500 0.800, AIME24 0.240, AIME25
-0.210, and Olympiad 0.530, which average exactly to Mean4 0.445.
+The component-level endpoint results are reported in
+\cref{tab:primary-components}.
 
 \begin{table}[t]
 \centering
@@ -691,12 +712,11 @@ manuscript organization, assist with \LaTeX{} formatting, and support the
 development and review of plotting and consistency-checking code. The authors
 reviewed and edited all AI-assisted outputs, independently verified the
 references, data-derived quantities, and scientific claims, and take full
-responsibility for the content of the published article. No generative AI
-system was used to create or alter experimental observations or to fabricate
-data, numerical results, tables, or scientific figures. The graphical abstract
-and manuscript figures were rendered from author-verified data using
-conventional plotting code; any AI-assisted code was reviewed and executed
-under author control.
+responsibility for the content of the published article. These tools were not
+used to generate or alter experimental observations or to synthesize image
+content. All tables, the graphical abstract, and the manuscript figures were
+produced deterministically from author-verified data using conventional code;
+all AI-assisted code was reviewed and executed under author control.
 
 \section*{Data availability}
 Result tables, analysis scripts, figure generators, run identities, resolved
@@ -718,6 +738,7 @@ This research received no specific grant from public, commercial, or
 not-for-profit funding agencies.
 
 \renewcommand{\bibfont}{\scriptsize}
+\setlength{\bibsep}{0pt plus 0.2ex}
 \bibliographystyle{elsarticle-num}
 \bibliography{refs}
 \end{document}

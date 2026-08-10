@@ -1,0 +1,46 @@
+Neurocomputing submission metadata
+
+Article type: Research Paper
+Title: The Advantage Spine: Dynamic Coordinate Selection for High-Rate RLVR
+
+Author 1
+Full name: Shikai Li
+Given name: Shikai
+Family name: Li
+Affiliation: West China Hospital, Sichuan University
+City: Chengdu
+State/province: Sichuan
+Country: China
+Email: lishikai@wchscu.edu.cn
+Corresponding author: No
+CRediT: Investigation; Writing -- original draft
+
+Author 2
+Full name: Qingsong Cai
+Given name: Qingsong
+Family name: Cai
+Affiliation: Sichuan University
+City: Chengdu
+State/province: Sichuan
+Country: China
+Corresponding author: No
+CRediT: Writing -- review and editing
+
+Author 3
+Full name: Rui Shi
+Given name: Rui
+Family name: Shi
+Affiliation: West China Hospital, Sichuan University
+City: Chengdu
+State/province: Sichuan
+Country: China
+Email: dr.shirui@hotmail.com
+Corresponding author: Yes
+CRediT: Supervision; Writing -- review and editing
+
+Author-confirmed values still required only if requested by Editorial Manager:
+- Corresponding-author street address and postcode
+- Corresponding-author telephone number
+- ORCID identifiers, if the authors choose to provide them
+
+Do not infer or invent these fields.
