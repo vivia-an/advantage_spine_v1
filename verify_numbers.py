@@ -87,11 +87,39 @@ controls=list(csv.DictReader(open('audited_mask_controls.csv',encoding='utf-8'))
 transfer=list(csv.DictReader(open('audited_transfer_results.csv',encoding='utf-8')))
 stability=list(csv.DictReader(open('audited_stability_results.csv',encoding='utf-8')))
 q17=list(csv.DictReader(open('audited_qwen17b_results.csv',encoding='utf-8')))
+primary=list(csv.DictReader(open('audited_primary_benchmark_results.csv',encoding='utf-8')))
 if len(controls)!=6: fail.append('mask controls do not have six rows')
 if len(transfer)!=4: fail.append('transfer table does not have four rows')
 if len(stability)!=2: fail.append('stability table does not have two rows')
 if len(q17)!=6: fail.append('Qwen3-1.7B table does not have six rows')
+if len(primary)!=2: fail.append('primary benchmark decomposition does not have two rows')
 for r in transfer: close(f"{r['setting']} gain",float(r['recipe_mean4'])-float(r['dense_mean4']),float(r['gain']))
+
+# Primary Qwen3-8B decomposition. Benchmark columns and Mean4 are independently
+# rounded three-seed aggregates, so validate the reported values and direction
+# without reconstructing Mean4 from rounded components.
+primary_index={r['condition']:r for r in primary}
+expected_primary={
+    'Dense 1x':(.762,.227,.200,.513,.426),
+    'Spine recipe 20x':(.800,.240,.210,.530,.445),
+}
+if set(primary_index)!=set(expected_primary):
+    fail.append('primary benchmark conditions are incomplete or duplicated')
+for condition,wants in expected_primary.items():
+    r=primary_index.get(condition)
+    if r is None: continue
+    if r['seeds']!='42;43;44' or r['aggregation']!='three-seed aggregate':
+        fail.append(f'{condition} primary benchmark provenance mismatch')
+    for key,want in zip(('math500','aime24','aime25','olympiad','mean4'),wants):
+        close(f'{condition} primary {key}',float(r[key]),want)
+if set(primary_index)==set(expected_primary):
+    dense_primary=primary_index['Dense 1x']
+    recipe_primary=primary_index['Spine recipe 20x']
+    for key in ('math500','aime24','aime25','olympiad'):
+        if float(recipe_primary[key])<=float(dense_primary[key]):
+            fail.append(f'primary benchmark gain is not positive for {key}')
+    close('primary Dense Mean4/factorial identity',float(dense_primary['mean4']),float(d1['mean']))
+    close('primary Recipe Mean4/factorial identity',float(recipe_primary['mean4']),float(r20['mean']))
 
 # M4: per-seed Qwen3-1.7B decomposition and the non-AIME Mean2 sensitivity.
 q17_index={(r['condition'],int(r['seed'])):r for r in q17}
@@ -150,7 +178,7 @@ else:
     close('Qwen3-1.7B transfer recipe',float(q17_transfer['recipe_mean4']),q17_summary[('Recipe','mean4')])
 stab={r['condition']:r for r in stability}
 for condition,reward,kl,entropy,clip,degraded in [
-    ('Dynamic Spine 20x',.080,.030,.250,.100,0),
+    ('Spine recipe 20x',.080,.030,.250,.100,0),
     ('Dense 20x',-.150,.090,.150,.650,1)]:
     r=stab.get(condition)
     if r is None: fail.append(f'missing stability row {condition}'); continue
@@ -183,7 +211,11 @@ tex_flat=' '.join(tex.split())
 highlights=open('highlights.txt',encoding='utf-8').read()
 cover=open('cover_letter.txt',encoding='utf-8').read()
 concept=open('make_fig_concept.py',encoding='utf-8').read()
+contam=open('make_fig_contam.py',encoding='utf-8').read()
 licenses=open('LICENSE_AND_DATA_USE.md',encoding='utf-8').read()
+ai_declaration=open('declarations/generative_ai.txt',encoding='utf-8').read()
+submission_metadata=open('submission_metadata.txt',encoding='utf-8').read()
+citation_metadata=open('CITATION.cff',encoding='utf-8').read()
 required=['0.445','0.340','0.105','0.600\\pm0.010','0.750\\pm0.008',
           '0.780\\pm0.005','0.420\\pm0.008','0.419\\pm0.005','0.180\\pm0.012',
           '0.36413\\pm0.00646','0.38037\\pm0.00760','0.60257\\pm0.00592',
@@ -192,7 +224,9 @@ required=['0.445','0.340','0.105','0.600\\pm0.010','0.750\\pm0.008',
 for token in required:
     if token not in tex: fail.append(f'manuscript missing canonical token {token}')
 for artifact in ['audited_factorial_results.csv','audited_stability_results.csv',
-                 'audited_specificity_results.csv','audited_qwen17b_results.csv']:
+                 'audited_specificity_results.csv','audited_qwen17b_results.csv',
+                 'audited_channel_overlap_results.csv',
+                 'audited_primary_benchmark_results.csv']:
     if not Path(artifact).is_file(): fail.append(f'evidence bundle missing {artifact}')
 for token in ['Lazy Likelihood Displacement','negative-sample reinforcement',
               'step-size--conditional','+0.002','+0.060',
@@ -208,6 +242,7 @@ for token in ['12.007','13.207','72.25','75.86','10,661.2 H200-GPU-hours',
               'recovers Mean4 from 0.340 to 0.383',
               'gap $0.062$',
               'not universal superiority over every retuned',
+              'not driven solely by the two smaller AIME sets',
               'MATH500 and AIME24 cards do not declare a license',
               'LICENSE\\_AND\\_DATA\\_USE.md']:
     if token not in tex_flat: fail.append(f'manuscript missing scope/license token {token}')
@@ -217,6 +252,88 @@ for cond,want in [('Untuned Dense 20x',.340),('Tuned Dense 20x',.383),
                   ('Dense 1x',.426),('Recipe 20x',.445)]:
     close(f'tuned-dense table {cond}',tuned_map.get(cond,float('nan')),want)
 close('tuned-dense recipe-tuned gap',tuned_map['Recipe 20x']-tuned_map['Tuned Dense 20x'],.062)
+
+# Figure 2 channel diagnostics: validate every seed record, recompute mean and
+# sample SD, and keep the two enrichment estimands explicitly separate.
+channel_rows=list(csv.DictReader(open('audited_channel_overlap_results.csv',encoding='utf-8')))
+channel_seed={(r['metric'],int(r['seed'])):r for r in channel_rows if r['record_type']=='seed'}
+expected_channel_seed={
+    'positive_active_fraction':(.049,.046,.049),
+    'negative_active_fraction':(.047,.049,.048),
+    'measured_overlap_fraction':(.0164,.0175,.0171),
+    'same_sign_rate':(.491,.472,.477),
+    'conflict_rate':(.509,.528,.523),
+    'positive_gini':(.691,.713,.696),
+    'negative_gini':(.622,.638,.630),
+    'positive_top1_energy':(.869,.891,.880),
+    'negative_top1_energy':(.831,.848,.841),
+}
+expected_seed_keys={(metric,seed) for metric in expected_channel_seed for seed in (42,43,44)}
+expected_seed_keys|={(metric,seed) for metric in ('independent_overlap_reference','overlap_enrichment')
+                    for seed in (42,43,44)}
+if set(channel_seed)!=expected_seed_keys:
+    fail.append(f'Figure 2 seed design mismatch: {sorted(set(channel_seed)^expected_seed_keys)}')
+for metric,wants in expected_channel_seed.items():
+    for seed,want in zip((42,43,44),wants):
+        row=channel_seed.get((metric,seed))
+        if row is None: continue
+        close(f'Figure 2 {metric} seed{seed}',float(row['value']),want,1e-12)
+        expected_status='derived' if metric=='conflict_rate' else 'observed'
+        if row['status']!=expected_status:
+            fail.append(f'Figure 2 {metric} seed{seed} status mismatch')
+
+channel_summary={(r['metric'],r['record_type']):r for r in channel_rows
+                 if r['record_type']!='seed'}
+summary_metrics=tuple(expected_channel_seed)+('independent_overlap_reference','overlap_enrichment')
+for metric in summary_metrics:
+    values=[float(channel_seed[(metric,seed)]['value']) for seed in (42,43,44)]
+    for record_type,want in [('mean',st.mean(values)),('sample_sd',st.stdev(values))]:
+        row=channel_summary.get((metric,record_type))
+        if row is None:
+            fail.append(f'Figure 2 missing {metric} {record_type}')
+        else:
+            close(f'Figure 2 {metric} {record_type}',float(row['value']),want,1e-12)
+            if row['status']!='derived': fail.append(f'Figure 2 {metric} {record_type} is not derived')
+
+for seed in (42,43,44):
+    positive=float(channel_seed[('positive_active_fraction',seed)]['value'])
+    negative=float(channel_seed[('negative_active_fraction',seed)]['value'])
+    overlap=float(channel_seed[('measured_overlap_fraction',seed)]['value'])
+    independent=float(channel_seed[('independent_overlap_reference',seed)]['value'])
+    enrichment=float(channel_seed[('overlap_enrichment',seed)]['value'])
+    same=float(channel_seed[('same_sign_rate',seed)]['value'])
+    conflict=float(channel_seed[('conflict_rate',seed)]['value'])
+    close(f'Figure 2 independent reference seed{seed}',independent,positive*negative,1e-12)
+    close(f'Figure 2 enrichment seed{seed}',enrichment,overlap/independent,1e-12)
+    close(f'Figure 2 sign partition seed{seed}',same+conflict,1.0,1e-12)
+
+aggregate_reference=channel_summary.get(('independent_overlap_reference','aggregate_product'))
+aggregate_enrichment=channel_summary.get(('overlap_enrichment','ratio_of_aggregate_quantities'))
+if aggregate_reference is None or aggregate_enrichment is None:
+    fail.append('Figure 2 lacks explicit ratio-of-aggregate records')
+else:
+    mean_value=lambda metric: float(channel_summary[(metric,'mean')]['value'])
+    aggregate_reference_value=float(aggregate_reference['value'])
+    aggregate_enrichment_value=float(aggregate_enrichment['value'])
+    close('Figure 2 aggregate-product reference',aggregate_reference_value,
+          mean_value('positive_active_fraction')*mean_value('negative_active_fraction'),1e-12)
+    close('Figure 2 ratio of aggregate quantities',aggregate_enrichment_value,
+          mean_value('measured_overlap_fraction')/aggregate_reference_value,1e-12)
+    close('Figure 2 mean-of-ratios estimand',mean_value('overlap_enrichment'),7.385176549806,1e-12)
+    if abs(aggregate_enrichment_value-mean_value('overlap_enrichment'))<1e-6:
+        fail.append('Figure 2 enrichment estimands were accidentally conflated')
+
+for row in channel_rows:
+    value=float(row['value'])
+    if row['unit'] in ('fraction','index') and not 0<=value<=1:
+        fail.append(f'Figure 2 {row["metric"]}/{row["record_type"]} is outside [0,1]')
+for token in ['4.8\\%','1.7\\%','0.048^2=0.23\\%','7.4\\times',
+              '48\\% of signs agree and 52\\% conflict','Gini 0.70 and 0.63',
+              'top-1\\% energy','0.88 and 0.84']:
+    if token not in tex: fail.append(f'manuscript missing Figure 2 token {token}')
+if 'audited_channel_overlap_results.csv' not in contam:
+    fail.append('Figure 2 generator does not read the channel audit CSV')
+
 for token in ['Qwen3-8B and Qwen3-1.7B','Apache License 2.0',
               'Llama 3.1 Community License','MATH500','does not declare a license',
               'AIME 2024','AIME 2025','OlympiadBench','MIT License','VERL']:
@@ -246,6 +363,30 @@ if 'SCHEMATIC' not in concept or 'schematic' not in tex.lower():
     fail.append('concept schematic disclosure missing from source/caption: schematic')
 if 'not measured coordinates' not in concept or 'not measured coordinates' not in tex:
     fail.append('concept schematic disclosure missing from source/caption: not measured coordinates')
+if 'collapse: yes' in concept:
+    fail.append('concept figure retains obsolete collapse label')
+if 'severe degradation' not in concept:
+    fail.append('concept figure lacks audited severe-degradation label')
+
+# Submission identity and AI disclosure must agree across the manuscript and
+# paste-ready supporting files. Unknown phone/postcode fields remain explicit
+# author-input items rather than inferred metadata.
+for token in ['Shikai Li','Qingsong Cai','Rui Shi','lishikai@wchscu.edu.cn',
+              'dr.shirui@hotmail.com','West China Hospital, Sichuan University']:
+    if token not in tex: fail.append(f'manuscript missing submission identity token {token}')
+    if token not in submission_metadata: fail.append(f'submission metadata missing identity token {token}')
+for token in ['given-names: Shikai','given-names: Qingsong','given-names: Rui',
+              'lishikai@wchscu.edu.cn','dr.shirui@hotmail.com']:
+    if token not in citation_metadata: fail.append(f'CITATION.cff missing identity token {token}')
+for token in ['Cursor and OpenAI Codex','synthesize image',
+              'produced deterministically from author-verified data',
+              'all AI-assisted code was reviewed and executed under author control']:
+    if token not in tex_flat: fail.append(f'manuscript AI disclosure missing token {token}')
+    if token not in ai_declaration: fail.append(f'standalone AI disclosure missing token {token}')
+for obsolete in ['fabricate data, numerical results, tables, or scientific figures',
+                 'No generative AI system was used to create or alter']:
+    if obsolete in tex or obsolete in ai_declaration:
+        fail.append(f'AI disclosure retains ambiguous obsolete wording: {obsolete}')
 
 # The manuscript's full factorial table must reproduce all 48 seed values and
 # all 16 mean/SD pairs in CSV order. This catches a correct CSV paired with a
@@ -323,4 +464,4 @@ for token in ['0.426','0.340','0.445','0.019','[0.0124, 0.0256]',
 
 if fail:
     print('FAILED:'); print('\n'.join(' - '+x for x in fail)); sys.exit(1)
-print('OK: factorial, LR audit, paired CI, M1 specificity, M4 Mean2, Spine and transfer checks passed')
+print('OK: factorial, LR audit, paired CI, M1 specificity, M4 Mean2, Figure 2, Spine and transfer checks passed')

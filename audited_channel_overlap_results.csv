@@ -1,0 +1,58 @@
+metric,record_type,seed,value,unit,status,derivation
+positive_active_fraction,seed,42,0.049000000000,fraction,observed,
+positive_active_fraction,seed,43,0.046000000000,fraction,observed,
+positive_active_fraction,seed,44,0.049000000000,fraction,observed,
+positive_active_fraction,mean,,0.048000000000,fraction,derived,mean of seed records
+positive_active_fraction,sample_sd,,0.001732050808,fraction,derived,sample SD of seed records
+negative_active_fraction,seed,42,0.047000000000,fraction,observed,
+negative_active_fraction,seed,43,0.049000000000,fraction,observed,
+negative_active_fraction,seed,44,0.048000000000,fraction,observed,
+negative_active_fraction,mean,,0.048000000000,fraction,derived,mean of seed records
+negative_active_fraction,sample_sd,,0.001000000000,fraction,derived,sample SD of seed records
+measured_overlap_fraction,seed,42,0.016400000000,fraction,observed,
+measured_overlap_fraction,seed,43,0.017500000000,fraction,observed,
+measured_overlap_fraction,seed,44,0.017100000000,fraction,observed,
+measured_overlap_fraction,mean,,0.017000000000,fraction,derived,mean of seed records
+measured_overlap_fraction,sample_sd,,0.000556776436,fraction,derived,sample SD of seed records
+same_sign_rate,seed,42,0.491000000000,fraction,observed,
+same_sign_rate,seed,43,0.472000000000,fraction,observed,
+same_sign_rate,seed,44,0.477000000000,fraction,observed,
+same_sign_rate,mean,,0.480000000000,fraction,derived,mean of seed records
+same_sign_rate,sample_sd,,0.009848857802,fraction,derived,sample SD of seed records
+conflict_rate,seed,42,0.509000000000,fraction,derived,1-same_sign_rate within seed
+conflict_rate,seed,43,0.528000000000,fraction,derived,1-same_sign_rate within seed
+conflict_rate,seed,44,0.523000000000,fraction,derived,1-same_sign_rate within seed
+conflict_rate,mean,,0.520000000000,fraction,derived,mean of seed records
+conflict_rate,sample_sd,,0.009848857802,fraction,derived,sample SD of seed records
+positive_gini,seed,42,0.691000000000,index,observed,
+positive_gini,seed,43,0.713000000000,index,observed,
+positive_gini,seed,44,0.696000000000,index,observed,
+positive_gini,mean,,0.700000000000,index,derived,mean of seed records
+positive_gini,sample_sd,,0.011532562595,index,derived,sample SD of seed records
+negative_gini,seed,42,0.622000000000,index,observed,
+negative_gini,seed,43,0.638000000000,index,observed,
+negative_gini,seed,44,0.630000000000,index,observed,
+negative_gini,mean,,0.630000000000,index,derived,mean of seed records
+negative_gini,sample_sd,,0.008000000000,index,derived,sample SD of seed records
+positive_top1_energy,seed,42,0.869000000000,fraction,observed,
+positive_top1_energy,seed,43,0.891000000000,fraction,observed,
+positive_top1_energy,seed,44,0.880000000000,fraction,observed,
+positive_top1_energy,mean,,0.880000000000,fraction,derived,mean of seed records
+positive_top1_energy,sample_sd,,0.011000000000,fraction,derived,sample SD of seed records
+negative_top1_energy,seed,42,0.831000000000,fraction,observed,
+negative_top1_energy,seed,43,0.848000000000,fraction,observed,
+negative_top1_energy,seed,44,0.841000000000,fraction,observed,
+negative_top1_energy,mean,,0.840000000000,fraction,derived,mean of seed records
+negative_top1_energy,sample_sd,,0.008544003745,fraction,derived,sample SD of seed records
+independent_overlap_reference,seed,42,0.002303000000,fraction,derived,positive_active_fraction*negative_active_fraction within seed
+independent_overlap_reference,seed,43,0.002254000000,fraction,derived,positive_active_fraction*negative_active_fraction within seed
+independent_overlap_reference,seed,44,0.002352000000,fraction,derived,positive_active_fraction*negative_active_fraction within seed
+independent_overlap_reference,mean,,0.002303000000,fraction,derived,mean of per-seed products
+independent_overlap_reference,sample_sd,,0.000049000000,fraction,derived,sample SD of per-seed products
+independent_overlap_reference,aggregate_product,,0.002304000000,fraction,derived,mean positive active*mean negative active
+overlap_enrichment,seed,42,7.121146330873,ratio,derived,measured_overlap_fraction/independent_overlap_reference within seed
+overlap_enrichment,seed,43,7.763975155280,ratio,derived,measured_overlap_fraction/independent_overlap_reference within seed
+overlap_enrichment,seed,44,7.270408163265,ratio,derived,measured_overlap_fraction/independent_overlap_reference within seed
+overlap_enrichment,mean,,7.385176549806,ratio,derived,mean of per-seed ratios
+overlap_enrichment,sample_sd,,0.336431361921,ratio,derived,sample SD of per-seed ratios
+overlap_enrichment,ratio_of_aggregate_quantities,,7.378472222222,ratio,derived,mean measured overlap/aggregate-product reference

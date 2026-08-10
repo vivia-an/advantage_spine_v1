@@ -82,7 +82,7 @@ ax.text(6.0, 36.2, r"Dense update at $20\times$", fontsize=8.1,
 matrix_stack(5.2, selected=False)
 ax.text(14.1, 4.2, "all coordinates receive the step",
         ha="center", fontsize=6.1, color=BODY)
-ax.text(14.1, 1.45, f"Mean4 {DENSE20_MEAN4:.3f}  |  collapse: yes",
+ax.text(14.1, 1.45, f"Mean4 {DENSE20_MEAN4:.3f}  |  severe degradation",
         ha="center", fontsize=6.4, color=RED, fontweight="bold")
 
 arrow(24.4, 34.0, "deconflict", r"$\lambda=0.1$")

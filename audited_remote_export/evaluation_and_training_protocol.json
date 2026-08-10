@@ -92,7 +92,15 @@
     "advantage_scaling": "group standard deviation",
     "normalization_epsilon": 1e-6,
     "norm_adv_by_std_in_grpo": true,
-    "cross_batch_normalization": false
+    "cross_batch_normalization": false,
+    "negative_advantage_coefficient": {
+      "values": [1.0, 0.1],
+      "applied_to": "token-level clipped policy-gradient loss where group-standardized advantage is negative",
+      "applied_after": ["PPO ratio clipping", "dual clipping"],
+      "positive_advantage_terms_scaled": false,
+      "kl_loss_scaled": false,
+      "reward_modified": false
+    }
   },
   "batch_and_lengths": {
     "prompt_batch": 256,

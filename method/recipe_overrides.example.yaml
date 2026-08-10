@@ -1,5 +1,6 @@
 actor_rollout_ref:
   actor:
+    neg_loss_coef: 0.1
     optim:
       optimizer: SparseAdamW
       optimizer_impl: verl.utils.optim.sparse_adamw

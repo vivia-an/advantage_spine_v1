@@ -25,5 +25,21 @@ actor_rollout_ref.actor.optim.sparse_min_numel=4096
 actor_rollout_ref.actor.optim.lr=1e-4
 ```
 
-Set the negative-advantage coefficient to `0.1` in your GRPO actor config.
+Set the negative-advantage coefficient to `0.1` in your GRPO actor config. In
+the audited VERL fork this coefficient is applied after PPO ratio clipping and
+dual clipping, and before response-mask aggregation. The reusable helper is
+provided in `negative_advantage_weighting.py`; its core operation is:
+
+```python
+neg_scale = torch.where(
+    advantages < 0,
+    torch.as_tensor(neg_loss_coef, device=pg_losses.device),
+    torch.ones_like(pg_losses),
+)
+pg_losses = pg_losses * neg_scale
+```
+
+Here `advantages` are group-standardized GRPO advantages. Positive-advantage
+policy-loss terms are unchanged; rewards are not modified; and the fixed KL
+loss is added separately, so it is not multiplied by `neg_loss_coef`.
 Audited tables and `verify_numbers.py` live at the repository root.

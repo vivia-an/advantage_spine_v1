@@ -6,9 +6,8 @@ manuscript organization, assist with LaTeX formatting, and support the
 development and review of plotting and consistency-checking code. The authors
 reviewed and edited all AI-assisted outputs, independently verified the
 references, data-derived quantities, and scientific claims, and take full
-responsibility for the content of the published article. No generative AI
-system was used to create or alter experimental observations or to fabricate
-data, numerical results, tables, or scientific figures. The graphical abstract
-and manuscript figures were rendered from author-verified data using
-conventional plotting code; any AI-assisted code was reviewed and executed
-under author control.
+responsibility for the content of the published article. These tools were not
+used to generate or alter experimental observations or to synthesize image
+content. All tables, the graphical abstract, and the manuscript figures were
+produced deterministically from author-verified data using conventional code;
+all AI-assisted code was reviewed and executed under author control.

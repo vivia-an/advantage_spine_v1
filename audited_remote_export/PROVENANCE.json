@@ -14,7 +14,7 @@
     "seconds": -2678400
   },
   "local_digest_prefix": "local_",
-  "local_verification_scope": "package structure, internal identities, protocol, counts, and local file integrity; does not remount remote raw checkpoints",
+  "local_verification_scope": "package structure, internal identities, protocol, counts, and local file integrity; publishes verified records and does not remount remote raw masks, checkpoints, or logs",
   "prepared_at_utc": "2026-08-06T02:00:00Z",
   "release_note": "Public release excludes internal staging audit trees and their generators. This export is frozen author-attested evidence for the manuscript aggregates.",
   "remote_raw_artifacts_mounted_locally": false,
