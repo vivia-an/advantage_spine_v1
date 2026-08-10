@@ -1,6 +1,6 @@
 control,mean4
-Dynamic Spine,0.445
-Frozen Spine,0.430
+Spine recipe,0.445
+Frozen support,0.430
 Dense-emergent oracle,0.440
 Static magnitude mask,0.420
 Random 40% mask,0.400

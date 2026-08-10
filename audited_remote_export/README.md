@@ -14,8 +14,10 @@ verification boundary.
 
 Local verification (`python verify_remote_audit.py audited_remote_export`)
 checks package structure, internal identities, protocol fields, counts, and
-local file integrity. It does **not** remount or byte-verify remote raw
-checkpoints or logs (`remote_raw_artifacts_mounted_locally` is false).
+local file integrity. The published mask evidence is therefore a set of
+verified records, not the raw mask tensors. Local verification does **not**
+remount or byte-verify remote raw masks, checkpoints, or logs
+(`remote_raw_artifacts_mounted_locally` is false).
 
 ## Qwen3-1.7B scores
 

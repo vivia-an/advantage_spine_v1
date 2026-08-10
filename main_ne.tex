@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,booktabs,graphicx,multirow,siunitx,url}
 \usepackage{placeins}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
 \usepackage[capitalize]{cleveref}
 \newcommand{\recipe}{\textsc{Spine}}
 \newcommand{\Semg}{S_{\mathrm{emg}}}
@@ -18,7 +19,7 @@
 \ead{lishikai@wchscu.edu.cn}
 \author[b]{Qingsong Cai}
 \author[a]{Rui Shi\corref{cor1}}
-% TODO before submission: add Rui Shi's corresponding-author e-mail via \ead{}.
+\ead{dr.shirui@hotmail.com}
 \cortext[cor1]{Corresponding author.}
 \affiliation[a]{organization={West China Hospital, Sichuan University},
 city={Chengdu},state={Sichuan},
@@ -31,23 +32,24 @@ state={Sichuan},country={China}}
 \begin{abstract}
 Large learning rates can accelerate reinforcement learning with verifiable
 rewards (RLVR), yet dense updates deteriorate as the rate rises. We ask whether
-this behavior can be separated into two controllable factors: the
-negative-advantage contribution and the coordinate support of the optimizer
-update. The resulting \emph{Advantage Spine} down-weights the negative channel
-and dynamically retains the per-tensor magnitude top 40\% of each pre-mask
-AdamW update. A $2\times2\times4$ factorial on Qwen3-8B crosses both factors
-with four learning-rate multipliers, using three matched seeds per cell and
-160 RL steps from common SFT weights. Dense $\lambda=1$ falls from 0.426 to
-0.340 Mean4 between $1\times$ and $20\times$, whereas the joint recipe rises
-from 0.426 to 0.445. Its paired gain over dense $1\times$ is 0.019 (nominal
-95\% paired $t$ interval $[0.0124,0.0256]$, $n=3$), and neither component
-alone recovers the dense reference at $20\times$. The selected 39.3\% of
-coordinates retain
-85.0\% of update energy. Their matched support agreement is
-$0.600\pm0.010$ Jaccard, compared with $0.420\pm0.008$ for mismatched
-Spine--dense pairs and $0.419\pm0.005$ for dense--dense pairs. Density-matched
-mask controls and transfers to DAPO, Qwen3-1.7B, and Llama3.1-8B further
-support a non-arbitrary, protocol-dependent high-rate operating region.
+this degradation is jointly constrained by negative-advantage exposure and
+optimizer-update support. Positive- and negative-advantage updates exhibit a
+conflict-enriched heavy tail, providing a candidate explanation for high-rate
+degradation. Based on this observation, we introduce the \emph{Advantage
+Spine}, a dynamic support that retains the per-tensor magnitude top 40\% of the
+pre-mask AdamW update without pruning weights or changing the inference
+network. The \recipe{} recipe combines this dynamic support with
+negative-advantage down-weighting. In a three-seed $2\times2\times4$
+factorial on Qwen3-8B, neither component alone recovers the dense $1\times$
+reference at $20\times$. The \recipe{} recipe reaches 0.445 Mean4, a
+paired gain of 0.019 over dense $1\times$, and remains above an exploratory lightly tuned
+dense $20\times$ arm at 0.383. Its 39.3\% support retains 85.0\% of update
+energy and exhibits seed-specific agreement beyond mismatched Spine--dense and
+dense--dense controls. Density-matched mask controls further support
+non-arbitrary selection, while directionally consistent transfers under DAPO
+and on Qwen3-1.7B and Llama3.1-8B indicate limited portability. These results
+identify a reproducible, protocol-dependent high-rate operating region shaped
+jointly by advantage exposure and dynamic coordinate selection.
 \end{abstract}
 
 \begin{keyword}
@@ -57,134 +59,139 @@ learning-rate stability \sep coordinate selection \sep large language models
 \end{frontmatter}
 
 \section{Introduction}\label{sec:intro}
-RLVR has become a standard route to improving mathematical reasoning in large
-language models~\cite{shao2024deepseekmath,yu2025dapo}. Its optimization
-dynamics are nevertheless unusually sensitive: policy gradients combine
-positive- and negative-advantage samples, and an aggressive step can amplify
-both useful and conflicting coordinates. This makes a simple question
-important for reliable post-training: can the learning rate be raised without
-amplifying the entire dense update?
+RLVR is an important post-training route for improving mathematical reasoning
+in large language models~\cite{shao2024deepseekmath,yu2025dapo}, but its gains
+depend on optimization stability. Raising the learning rate accelerates
+parameter movement while applying the same global multiplier to every dense
+update coordinate. In our Qwen3-8B ladder, dense RLVR deteriorates as the rate
+rises. We therefore ask whether high-rate degradation depends not only on step
+size, but also on which optimizer-update coordinates are exposed to the
+negative-advantage signal.
 
-Prior work gives two clues. First, policy-gradient updates can be highly
-non-uniform across parameters and may form reproducible subnetworks
-~\cite{mukherjee2025subnetwork,mukherjee2026needadam}. Second, sparse-update
-methods show that retaining selected coordinates can preserve optimization
-progress~\cite{stich2018sparsified,karimireddy2019errorfeedback,dey2024supar}.
-These observations do not by themselves show which coordinates should be kept
-in RLVR, whether the negative-advantage channel matters, or whether sparsity
-actually enlarges the usable learning-rate range.
+We first examine the structure of the positive- and negative-advantage
+updates. Their active coordinates overlap at $7.4\times$ an independence
+reference, and 52\% of the shared coordinates have conflicting signs. This
+structure does not make negative advantages intrinsically harmful; it instead
+suggests that a uniformly amplified dense step can expose a conflict-enriched
+tail. Prior work shows that policy-gradient updates can form reproducible
+subnetworks~\cite{mukherjee2025subnetwork,mukherjee2026needadam} and that sparse
+updates can preserve optimization progress
+~\cite{stich2018sparsified,karimireddy2019errorfeedback,dey2024supar}. What is
+missing is an online rule for selecting the RLVR update coordinates that
+receive an amplified step, together with a controlled test of how this support
+interacts with the negative-advantage channel.
 
-We address those questions with an Advantage Spine: first down-weight the
-negative-advantage channel, then dynamically keep the largest 40\% of the
-pre-mask AdamW update within each sufficiently large tensor. The contribution
-is not top-$k$ masking itself, but a controlled decomposition of high-rate
-behavior. We cross mask presence, negative-channel weight, and four
-learning-rate multipliers in all 16 cells, with three matched seeds per cell.
-This design isolates the joint recipe from either component alone.
-
-Figure~\ref{fig:concept} separates the intervention from its measured outcomes.
+Based on this observation, we introduce the Advantage Spine, which retains the
+largest 40\% of the pre-mask AdamW update within each sufficiently large tensor
+and refreshes this support at every step. The \recipe{} recipe combines the
+dynamic support with negative-advantage down-weighting. It selects
+optimizer-update coordinates without removing model weights or changing the
+inference network. We separate the two components and their rate dependence in
+a complete 16-cell factorial over mask presence, negative-channel weight, and
+four learning-rate multipliers, with three matched seeds per cell.
+Figure~\ref{fig:concept} summarizes the intervention and its principal
+evidence.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=.97\textwidth]{fig_concept.pdf}
-\caption{\textbf{From a dense high-rate update to the Advantage Spine.}
+\caption{\textbf{From a dense high-rate update to the \recipe{} recipe.}
 (A) A dense $20\times$ update applies the optimizer step to every coordinate,
-including coordinates affected by competing advantage channels. (B) The joint
-recipe down-weights the negative channel and dynamically retains the per-tensor
+including coordinates affected by competing advantage channels. (B) The
+\recipe{} recipe down-weights negative-advantage policy-loss terms and
+dynamically retains the per-tensor
 top 40\% of the pre-mask AdamW update. (C) At the largest tested
 rate: 39.3\% nonzero coordinates retain 85.0\% of update energy, support
-Jaccard is $0.600\pm0.010$, and Mean4 increases from 0.340 to 0.445 relative
+Jaccard with the matched dense-emergent support is $0.600\pm0.010$, and Mean4
+increases from 0.340 to 0.445 relative
 to dense $20\times$. The matrix dots are a schematic only: their positions are
 illustrative and are not measured coordinates.}
 \label{fig:concept}
 \end{figure*}
 
-The experiments yield three consistent findings. First, only the joint
-intervention exceeds the dense $1\times$ reference at $20\times$; neither
-component alone does. Second,
-the selected support retains 85\% of update energy, aligns seed-specifically
-with dense-emergent coordinates, and outperforms density-matched mask controls.
-Third, the direction transfers with smaller gains to a second RL objective and
-two additional model settings. The tested ladder ends at $20\times$ and does
-not locate a universal stability boundary.
+The evidence has three layers. At $20\times$, neither component alone recovers
+the dense $1\times$ reference, whereas the joint \recipe{} recipe reaches
+0.445 Mean4 and remains above a lightly tuned dense arm. Its support
+concentrates update energy and aligns seed-specifically with dense-emergent
+coordinates; mismatched, dense--dense, and density-matched mask controls rule
+out random overlap or a shared dense backbone as sufficient explanations. The
+direction of effect also transfers, with smaller gains, under DAPO and on
+Qwen3-1.7B and Llama3.1-8B. Together, these results establish a reproducible,
+protocol-dependent high-rate operating region rather than a universal
+stability boundary.
 
 \section{Related work}\label{sec:related}
-\paragraph{RLVR objectives.}
-GRPO and DAPO optimize verifiable reasoning rewards without a learned critic in
-the conventional PPO form~\cite{schulman2017ppo,shao2024deepseekmath,yu2025dapo}.
-Recent analyses show that negative-reward or negative-advantage samples cannot
-be labelled uniformly helpful or harmful. Deng et al.~\cite{deng2025negativegrad}
-attribute Lazy Likelihood Displacement to penalizing all tokens in incorrect
-responses with equal strength and selectively down-weight the implicated token
-penalties. Zhu et al.~\cite{zhu2025negativereinforcement}, by contrast, show
-that negative-sample reinforcement alone can improve the Pass@$k$ spectrum and
-that up-weighting it can be beneficial. Their interventions are token- or
-sample/objective-level and evaluate different scaling outcomes. Ours asks a
-different conditional question: when the global step is amplified, how does a
-channel-wide coefficient interact with dynamic optimizer-coordinate support?
+\paragraph{Negative signals in RLVR.}
+GRPO and DAPO optimize verifiable reasoning rewards without the learned critic
+used in conventional PPO~\cite{schulman2017ppo,shao2024deepseekmath,yu2025dapo}.
+Negative-reward and negative-advantage samples are not uniformly helpful or
+harmful. Token-selective penalty attenuation can reduce
+Lazy Likelihood Displacement~\cite{deng2025negativegrad}, whereas negative-sample
+reinforcement can improve the Pass@$k$ spectrum
+~\cite{zhu2025negativereinforcement}. These studies intervene at the token,
+sample, or objective level. We instead ask how a channel-wide coefficient
+interacts with optimizer-coordinate support when the global step is amplified.
 
-\paragraph{Sparse updates and subnetworks.}
-Lottery-ticket, dynamic sparse-training, and intrinsic-dimension work shows
-that effective parameter movement can occupy a small subspace or subnetwork
+\paragraph{Sparse updates and emergent subnetworks.}
+Lottery-ticket, dynamic sparse-training, and intrinsic-dimension results show
+that effective parameter movement can occupy a limited subspace or subnetwork
 ~\cite{frankle2019lottery,evci2020rigl,li2018intrinsic,aghajanyan2021intrinsic}.
-Gradient sparsification often relies on error feedback to repair discarded
-updates~\cite{karimireddy2019errorfeedback,richtarik2021ef21}; our method uses
-no error-feedback accumulator and instead refreshes its support each step.
-The closest motivation is the observation that RL fine-tuning produces stable
-emergent update subnetworks~\cite{mukherjee2025subnetwork}. We use such a
-dense-emergent set only as an external identity check; it is not available to
-the online recipe.
+Gradient sparsification commonly uses error feedback
+~\cite{karimireddy2019errorfeedback,richtarik2021ef21}, while pruning removes
+or restructures persistent weights~\cite{zhu2025pruningreview,
+ziv2021stochasticpruning,kamelianrad2026topographical,xie2023lotteryfewshot}.
+Advantage Spine instead refreshes optimizer-update support at every step; the
+model and inference graph remain dense. Stable update subnetworks observed in
+RL fine-tuning~\cite{mukherjee2025subnetwork} serve only as an offline identity
+check and are unavailable to the online recipe. This also differs from
+calibrating Adam's adaptive rate~\cite{tong2022calibratingadam}: we hold the
+optimizer family fixed and vary which update coordinates receive the global
+multiplier.
 
-This distinction places the method within sparse learning while shifting the
-object of selection from persistent network weights to step-wise optimizer
-updates. Reviews organize pruning primarily by
-when and at what granularity weights are removed~\cite{zhu2025pruningreview};
-stochastic pruning studies how regularization shapes the surviving network
-~\cite{ziv2021stochasticpruning}, and topographical sparse mapping modifies the
-trained network structure~\cite{kamelianrad2026topographical}. Lottery-ticket
-behavior has also been examined under few-shot adaptation
-~\cite{xie2023lotteryfewshot}. Our intervention is different in object and
-purpose: no weight is deleted and the inference network remains dense; only the
-coordinates moved by each optimizer step are selected. The learning-rate side
-is likewise complementary to work that calibrates Adam's adaptive rate for
-convergence~\cite{tong2022calibratingadam}: we hold the optimizer family fixed
-and ask whether update support changes the empirically usable global multiplier.
-
-\paragraph{Closest 2026 RLVR analyses.}
-Several 2026 studies sharpen related but distinct axes. Token-level analyses
-show that RLVR distributional gains concentrate on sparse critical tokens
-~\cite{meng2026sparsecritical} and characterize the direction of RLVR updates
-for identification and test-time use~\cite{huang2026direction}; those results
-concern token probabilities, not which optimizer coordinates receive a large
-global step. Other work attributes RLVR geometry to low-rank dynamics and
-implicit reward overfitting~\cite{ye2026lowrank}, or shows that many random
-sparse subnetworks already suffice for RLVR~\cite{adewuyi2026multiticket}.
-Mukherjee et al.~\cite{mukherjee2026needadam} further argue that SGD can match
-AdamW while inducing extremely sparse parameter movement. We keep AdamW fixed
-and instead select a dynamic high-magnitude update support under an amplified
-learning-rate multiplier. Complementary optimization-dynamics results discuss
-learning off principal directions~\cite{zhu2026threegate} and step-size
-thresholds under a gradient-gap view~\cite{suk2026gradientgap}. None of these
-studies isolate the joint, rate-conditional interaction of negative-channel
-attenuation with online top-$k$ optimizer-coordinate masks that is our focus.
+\paragraph{RLVR update geometry.}
+Recent work characterizes RLVR through sparse critical tokens
+~\cite{meng2026sparsecritical}, update directions~\cite{huang2026direction},
+low-rank dynamics~\cite{ye2026lowrank}, random sparse subnetworks
+~\cite{adewuyi2026multiticket}, and optimizer-induced sparse movement
+~\cite{mukherjee2026needadam}. Complementary analyses study learning outside
+principal directions~\cite{zhu2026threegate} and step-size thresholds under a
+gradient-gap view~\cite{suk2026gradientgap}. Together, these results establish
+that RLVR updates are structured. They do not isolate the joint,
+rate-conditional interaction between negative-channel attenuation and online
+top-$k$ optimizer-coordinate selection examined here.
 
 \paragraph{Large-step stability.}
-Neural optimization can remain stable beyond classical smoothness predictions
-through catapult or edge-of-stability dynamics~\cite{lewkowycz2020catapult,
-cohen2021edgestability}. Our experiments do not identify such a universal
-mechanism. They establish an empirical operating region under a particular
-coordinate and advantage-channel intervention.
+Catapult and edge-of-stability dynamics show that neural optimization can
+remain stable beyond classical smoothness predictions
+~\cite{lewkowycz2020catapult,cohen2021edgestability}. Our goal is narrower: we
+test an operational channel-and-coordinate intervention within a specified
+RLVR protocol, rather than propose a universal large-step mechanism.
 
 \section{Method}\label{sec:method}
-Let $g_t^+$ and $g_t^-$ denote the positive- and negative-advantage gradient
-aggregates at step $t$. We form
+Our design objective is to restrict which advantage contribution and update
+coordinates are exposed to an amplified global step without changing the model
+architecture. Let $A_{t,i}$ be the group-standardized GRPO advantage and
+$\ell^{\mathrm{clip}}_{t,i}$ the corresponding token-level policy loss after
+PPO ratio clipping and dual clipping. The implementation applies
 \begin{equation}
- g_t(\lambda)=g_t^+ + \lambda g_t^-, \qquad \lambda\in\{0.1,1.0\}.
+ \ell_{t,i}(\lambda)=
+ \begin{cases}
+ \ell^{\mathrm{clip}}_{t,i}, & A_{t,i}\geq 0,\\
+ \lambda\ell^{\mathrm{clip}}_{t,i}, & A_{t,i}<0,
+ \end{cases}
+ \qquad \lambda\in\{0.1,1.0\}.
  \label{eq:channel}
 \end{equation}
-AdamW maps this gradient and its moment state to a pre-mask update $u_t$. For
+The response-mask aggregation follows this scaling. Positive-advantage terms
+are unchanged, while the fixed KL penalty is added separately and is not
+scaled by $\lambda$. Thus $\lambda=0.1$ attenuates, rather than deletes, the
+negative-advantage contribution; it does not modify rewards.
+
+AdamW maps the resulting gradient and its moment state to a pre-mask update
+$u_t$. For
 every tensor with at least 4096 elements, $M_t$ keeps the largest fraction
-$\tau=0.4$ by $|u_t|$; smaller tensors remain dense. Ties are resolved
-deterministically. The applied update is
+$\tau=0.4$ by $|u_t|$; smaller tensors remain dense. Selection uses the
+backend \texttt{torch.topk} implementation, and the realized supports are
+recorded by the mask-identity manifests. The applied update is
 \begin{equation}
  \theta_{t+1}=\theta_t-\eta M_t\odot u_t . \label{eq:update}
 \end{equation}
@@ -192,13 +199,16 @@ The selection is per tensor, not global, is refreshed every step, and is
 applied after constructing the AdamW update. There is no error feedback. We
 call the dynamic support $\St=\mathrm{supp}(M_t)$ the Advantage Spine and the
 joint condition $(\tau,\lambda)=(0.4,0.1)$ the \recipe{} recipe.
+SparseAdamW updates both Adam moment buffers densely, optionally applies its
+adaptive update-RMS clip to the bias-corrected Adam direction, masks that
+direction only in eligible tensors, and applies decoupled weight decay densely.
+The coordinate mask therefore does not mask moment updates or decoupled weight
+decay.
 
-This terminology separates three objects that are easy to conflate:
-$M_t$ is the actual online mask; its canonical bit-packed bitmap and hash form
-the identity record, from which the active indices are exactly recoverable;
-and $\Semg$ is an offline reference constructed from the largest
-cumulative parameter movements of a dense $1\times$ run at matched density.
-The recipe never uses $\Semg$ during training.
+Three objects remain distinct. $M_t$ is the online mask; its bit-packed bitmap
+and hash record its recoverable identity. $\Semg$ is an offline reference built
+from the largest cumulative parameter movements of a density-matched dense
+$1\times$ run and is never used by the training recipe.
 
 We measure concentration as
 \begin{equation}
@@ -217,18 +227,17 @@ the per-seed specificity gain
  G_s=J(S_s,D_s)-\frac{1}{2}\sum_{t\ne s}J(S_s,D_t).
  \label{eq:specificity}
 \end{equation}
-These comparisons distinguish matched alignment from task-wide coordinates
-that recur across independent runs. Because sets are reused across pairs, the
-reported sample deviations are descriptive rather than independent-replicate
-inferential errors.
+These comparisons separate matched alignment from task-wide coordinates that
+recur across runs. Because sets are reused across pairs, their sample
+deviations are descriptive rather than independent-replicate inferential
+errors.
 
 \section{Experimental protocol}\label{sec:protocol}
 \paragraph{Primary factorial.}
-The primary experiment uses Qwen3-8B and a GRPO-family RLVR objective. All
+The primary experiment uses Qwen3-8B and a GRPO objective. All
 runs use model-only initialization from the same math-supervised SFT
-checkpoint; this is an initialization, not an RL resume. The RL optimizer,
-scheduler, global step, data position, and random-number-generator state are
-initialized anew at RL step 0, and every run completes 160 RL optimizer steps.
+checkpoint; this is not an RL resume. The RL state is initialized at step 0,
+and every run completes 160 RL optimizer steps.
 We cross mask $\in\{$dense, top-0.4$\}$, negative-channel coefficient
 $\lambda\in\{1.0,0.1\}$, and learning-rate multiplier
 $\in\{1,5,10,20\}$. The $1\times$ rate is $5\times10^{-6}$. Every cell uses
@@ -239,39 +248,39 @@ and initial weights within each seed.
 We evaluate Math500 ($n=500$), AIME24 and
 AIME25 (30 problems each), and the English split of OlympiadBench ($n=581$).
 Each checkpoint is evaluated with avg@32 accuracy at temperature 0.6,
-top-$p=1.0$, no top-$k$ truncation, and an 8192-token response cap. Thus each
-AIME set contains $30\times32=960$ decoded samples; Math500 and OlympiadBench
-contain 16,000 and 18,592, respectively. We evaluate RL steps 40, 80, 120,
-and 160 and use step 160 for the primary comparisons. $\MeanFour$ is the
+top-$p=1.0$, no top-$k$ truncation, and an 8192-token response cap. We evaluate
+RL steps 40, 80, 120, and 160 and use step 160 for the primary comparisons.
+The resulting decoded-sample counts are $30\times32=960$ per AIME set, 16,000
+for Math500, and 18,592 for OlympiadBench.
+$\MeanFour$ is the
 unweighted arithmetic mean of the four benchmark accuracies. Training seeds
-index independent RL runs; the 32 generations per problem are evaluation
-replicates and are not counted as additional training seeds.
+index independent RL runs; generations per problem are evaluation replicates,
+not additional training seeds.
 
 \paragraph{Initialization, recovery, and learning rates.}
-New runs load only the SFT model weights and initialize the optimizer,
-scheduler, data position, RNG state, and RL step from zero. Interrupted runs
-resume full state only within the same model, factorial cell, seed, and output
-directory. For every included run, the requested, optimizer, scheduler, and
-logged learning rates agree. An exploratory Llama continuation that requested
-$20\times$ but logged $1\times$ is excluded from all estimates.
+New runs load only SFT model weights. Full-state recovery is restricted to the
+same model, factorial cell, seed, and output directory. Requested, optimizer,
+scheduler, and logged learning rates agree for every included run; an
+exploratory Llama continuation with a logged-rate mismatch is excluded.
+Learning-rate and state verification appears in \ref{app:audit}; the complete
+initialization, recovery, and evaluation contract appears in
+\ref{app:implementation}.
 
 \paragraph{Uncertainty and estimands.}
 Factorial cells report mean and sample standard deviation across three seeds.
 After reporting the complete ladder, we highlight the endpoint contrast
 between dense $1\times$ and recipe $20\times$, paired within seed. Its
-two-sided Student-$t$ interval with two degrees of freedom is a nominal
-descriptive interval for variation under these matched seeds; it is not a
-selection-adjusted confirmatory interval over the 16 factorial cells, nor
-evidence of population-wide certainty. The seed ordering is nearly parallel
-across cells, so pairing removes much of the marginal seed variation and
-produces a narrower interval than an unpaired calculation. Because the
-contrast depends on matched run identities, \cref{tab:factorial} reports all
-48 seed-level scores.
+two-sided Student-$t$ interval is a nominal description of variation across
+these matched seeds, not a selection-adjusted confirmatory interval over the 16
+factorial cells. \Cref{tab:factorial} therefore reports all 48 seed-level
+scores.
 For the Qwen3-1.7B transfer, all four benchmark components are available for
-three matched seeds. In addition to Mean4, we additionally report a small-set
+three matched seeds. In addition to Mean4, we report a small-set
 sensitivity summary, Mean2, as the average of Math500 and Olympiad after
-excluding AIME24 and AIME25. Mask-control and the remaining aggregate-only
-transfer entries are labelled as lacking per-seed uncertainty.
+excluding AIME24 and AIME25. Mask-control and aggregate-only transfer entries
+are identified wherever per-seed uncertainty is unavailable.
+The lightly tuned dense $20\times$ arm is likewise an aggregate diagnostic
+without matched-seed uncertainty and is not treated as a factorial cell.
 
 \section{Results}\label{sec:results}
 \subsection{The two advantage channels share a conflict-prone tail}
@@ -280,9 +289,8 @@ measured shared support is 1.7\%, compared with $0.048^2=0.23\%$ under an
 independence reference, a $7.4\times$ enrichment. On the shared support,
 48\% of signs agree and 52\% conflict. The positive and negative update
 distributions are both tail-concentrated (Gini 0.70 and 0.63; top-1\% energy
-0.88 and 0.84). These measurements motivate down-weighting but do not prove
-that the negative channel is intrinsically harmful. In particular, a conflicted
-shared tail is a mechanism for step-size sensitivity, not evidence that useful
+0.88 and 0.84). This conflict-enriched tail motivates the intervention as a
+candidate mechanism for step-size sensitivity; it does not imply that useful
 negative-sample reinforcement should be removed.
 
 \begin{figure}[t]
@@ -301,12 +309,10 @@ negative channel without masking reaches $0.400$ at $20\times$; masking
 without down-weighting reaches $0.410$. Both improve over dense $20\times$,
 but neither recovers the dense $1\times$ reference of $0.426$.
 
-The joint recipe behaves differently: $0.426$, $0.432$, $0.435$, and $0.445$
-from $1\times$ through $20\times$. At the largest tested rate it gains $0.105$
-over dense $20\times$, $0.045$ over down-weighting alone, $0.035$ over masking
-alone, and $0.019$ over its own $1\times$ value. Its three seed-paired gains
-over dense $1\times$ are $0.020$, $0.016$, and $0.021$, giving mean $0.019$
-and a nominal 95\% paired interval $[0.0124,0.0256]$.
+The joint recipe instead rises from 0.426 at $1\times$ to 0.445 at $20\times$.
+At the endpoint, its gain is 0.105 over dense $20\times$ and 0.019 over dense
+$1\times$. The three seed-paired gains over dense $1\times$ are 0.020, 0.016,
+and 0.021, giving a nominal 95\% paired interval $[0.0124,0.0256]$.
 
 \begin{figure*}[t]
 \centering\includegraphics[width=.72\textwidth]{fig_amplify.pdf}
@@ -316,21 +322,25 @@ $\lambda=0.1$ recipe improves monotonically over the tested ladder.}
 \label{fig:factorial}
 \end{figure*}
 
-This result warrants a precise interpretation. At $20\times$, the conventional
-$2\times2$ interaction is
-$0.445-0.410-0.400+0.340=-0.025$. We therefore do not claim positive synergy.
-The supported claim is operational complementarity: both interventions are
-required for the only $20\times$ condition that exceeds the native dense
-reference. Also, $20\times$ is the endpoint of the tested ladder; no failure
-boundary for the recipe was measured.
+At $20\times$, the conventional $2\times2$ interaction is
+$0.445-0.410-0.400+0.340=-0.025$. The result is therefore operational
+complementarity, not positive synergy: both components are required for the
+only endpoint condition that exceeds the native dense reference. The tested
+ladder ends at $20\times$ and does not locate a failure boundary for the recipe.
 
-A lightly tuned dense $20\times$ arm (warmup / gradient clipping / $\beta_1$)
-recovers Mean4 from 0.340 to 0.383, confirming that part of the untuned
-collapse is optimizer-schedule sensitive. Even so, the tuned dense endpoint
-remains below dense $1\times$ (0.426) and below the Spine recipe at $20\times$
-(0.445; gap $0.062$). We therefore claim a matched-protocol high-rate
-operating region for Spine, not universal superiority over every retuned
-dense optimizer.
+An exploratory lightly tuned dense $20\times$ arm (16 warmup steps, global
+gradient clip 0.5, and $\beta_1=0.8$) recovers Mean4 from 0.340 to 0.383,
+showing that part of the untuned degradation is optimizer-schedule sensitive.
+It ends with reward $-0.08$, KL loss 0.04--0.07, entropy 0.18--0.23, response
+clip ratio 0.25--0.45, and no recorded run failure, numerical collapse, or
+policy collapse; we classify it as degraded but partially recovered. The
+endpoint nevertheless remains below dense $1\times$ (0.426) and the \recipe{}
+recipe at $20\times$ (0.445; gap $0.062$). Because this arm is an aggregate
+diagnostic rather than a matched-seed tuning study, it establishes partial
+schedule sensitivity, not superiority over tuned dense optimization. The
+\recipe{} recipe therefore expands the high-rate operating region under the
+tested protocol without implying superiority over every retuned dense
+optimizer.
 
 \Cref{tab:effects} shows why the full LR ladder matters. At native rate neither
 component helps materially. As LR rises, masking and down-weighting each become
@@ -339,15 +349,13 @@ reaches 0.105 at $20\times$. The interaction is small and changes sign across
 the ladder; the gain is therefore a rate-dependent joint operating condition,
 not a stable super-additive effect.
 
-This rate dependence resolves the apparent tension with work that finds
-negative reinforcement useful~\cite{deng2025negativegrad,
-zhu2025negativereinforcement}. In the dense arm, changing $\lambda$ from 1 to
-0.1 changes Mean4 by only $+0.002$ at $1\times$, compared with $+0.060$ at
-$20\times$. We therefore do not infer that negative samples should generally
-be suppressed. The supported conclusion is step-size--conditional: attenuating
-the channel becomes protective when a large global multiplier would otherwise
-amplify its conflict-prone tail. This is also distinct from token-selective
-penalty reweighting and from optimizing the full Pass@$k$ curve.
+This rate dependence reconciles the result with evidence that negative
+reinforcement can be useful~\cite{deng2025negativegrad,
+zhu2025negativereinforcement}. In the dense arm, lowering $\lambda$ changes
+Mean4 by only $+0.002$ at $1\times$ but by $+0.060$ at $20\times$.
+Attenuation is therefore protective when a large global multiplier exposes the
+conflict-prone tail. The conclusion is step-size--conditional: we
+do not infer that negative samples should generally be suppressed.
 
 \begin{table}[t]
 \centering
@@ -387,7 +395,7 @@ preferred direction only; these diagnostics are not combined into a new score.}
 \toprule Condition & Reward $\uparrow$ & KL & Entropy & Clip $\downarrow$ & Classification\\
 \midrule
 Dense & $-.150$ & .090 & .150 & .650 & degraded\\
-Dynamic Spine & $.080$ & .030 & .250 & .100 & normal\\
+Spine recipe & $.080$ & .030 & .250 & .100 & normal\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -425,22 +433,26 @@ by mean $\pm$ sample SD; logged and requested learning rates agree.}
 \end{table}
 
 \subsection{The online support is concentrated and non-arbitrary}
+The factorial establishes the performance pattern. We next test whether the
+selected support carries specific structure or merely behaves as an arbitrary
+density-matched sparsification.
+
 The realized nonzero ratio is 0.393 rather than exactly 0.400 because small
 tensors are exempt and top-$k$ counts are discrete. This support retains 0.850
 of pre-mask update energy, corresponding to a retained norm ratio of 0.922.
-Thus the observation is concentration, not a theorem that the discarded 15\%
-is harmless.
+This establishes concentration without assuming that the discarded 15\% is
+harmless.
 
-Packed masks, per-layer hashes, and derived top-$k$ indices were archived at
-RL steps 40, 80, 120, and 160 for every Top-0.4 run, with no hash collision or
-density error. The identity analysis uses the step-160 masks.
+The identity analysis uses source-attested step-160 mask manifests and hash
+records. The public artifact verifies their identities, protocol fields, and
+package integrity; the remote raw mask files are not redistributed.
 
 Across seeds, the step-160 dynamic support agrees with its matched dense-
 emergent set: Jaccard $0.600\pm0.010$, recall $0.750\pm0.008$, sign agreement
 $0.780\pm0.005$, and enrichment $2.400\pm0.039$ over the random reference.
-The random reference alone is not a sufficient null because dense trajectories
-can share task- and initialization-dependent heavy coordinates. The complete
-cross-seed matrix resolves this ambiguity. Its matched diagonal is
+Because dense trajectories can share task- and initialization-dependent heavy
+coordinates, we test structured rather than only random nulls. The complete
+cross-seed matrix has matched diagonal
 $0.604,0.589,0.607$, whereas all six mismatched Spine--dense values lie between
 $0.409$ and $0.431$ ($0.420\pm0.008$). The three dense--dense values are
 $0.414,0.423,0.419$ ($0.419\pm0.005$). Thus matched alignment exceeds the
@@ -450,22 +462,19 @@ $(0.600-0.419)/(1-0.419)=0.312$.
 
 The row-wise specificity gains $G_s$ are $0.191,0.167,0.182$, or
 $0.180\pm0.012$. Every matched value exceeds every mismatched or dense--dense
-value. This clean diagonal separation is strong evidence for seed-specific
-alignment rather than overlap caused only by a common dense backbone. With
-three seeds, it remains a descriptive identity result, not a population-level
-significance claim. At density 0.4, Jaccard and recall are algebraically linked
-for equal-size sets; we report both for comparability, not as independent
-evidence.
+value. This clean diagonal separation supports seed-specific alignment beyond
+a common dense backbone. The three-seed identity result is descriptive;
+Jaccard and recall are reported for comparability and are algebraically linked
+for equal-size sets.
 
 The mask controls provide a stronger test than overlap alone
-(\cref{fig:support}D). At $20\times$, the dynamic Spine obtains 0.445 Mean4,
-compared with 0.430 for a frozen Spine, 0.440 for the offline dense-emergent
+(\cref{fig:support}D). At $20\times$, the dynamic-support recipe obtains 0.445 Mean4,
+compared with 0.430 for a frozen support, 0.440 for the offline dense-emergent
 oracle, 0.420 for a static magnitude mask, 0.400 for a random 40\% mask, and
-0.350 for the reported complementary mask. These are aggregate control values,
-so we make no significance claim for the 0.005 difference between the dynamic
-method and oracle. The defensible conclusion is that dynamic selection matches
-the offline oracle numerically and substantially exceeds arbitrary or
-complementary supports.
+0.350 for the reported complementary mask. These aggregate controls show that
+dynamic selection approaches the offline oracle numerically and substantially
+exceeds arbitrary or complementary supports; the 0.005 oracle difference has
+no per-seed uncertainty.
 
 \begin{figure*}[t]
 \centering\includegraphics[width=.94\textwidth]{fig_support_evidence.pdf}
@@ -482,14 +491,12 @@ without per-seed uncertainty.}
 \label{fig:support}
 \end{figure*}
 
-\subsection{Transfer and resource cost}\label{sec:transfer}
+\subsection{The direction transfers across algorithms and models}\label{sec:transfer}
 The pattern transfers with smaller absolute gains (\cref{tab:transfer}). Under
 DAPO on Qwen3-8B, Mean4 changes from 0.440 to 0.455. On Qwen3-1.7B, the
 three-seed Mean4 changes from $0.36413\pm0.00646$ to
-$0.38037\pm0.00760$ (paired gain $0.01624\pm0.00482$). The paired gains are
-$0.01622$, $0.01142$, and $0.02107$ for seeds 42--44; the nonparallel seed
-ordering rules out the previously reported constant-gain pattern. Crucially,
-the transfer is not wholly carried by the two small AIME sets: Mean2 changes
+$0.38037\pm0.00760$ (paired gain $0.01624\pm0.00482$). The transfer is not
+wholly carried by the two small AIME sets: Mean2 changes
 from $0.60257\pm0.00592$ to $0.61108\pm0.00714$, a paired gain of
 $0.00851\pm0.00628$, positive in all three seeds. The component result is mixed
 rather than universal: Math500 changes by $-0.0013$ while Olympiad changes by
@@ -502,8 +509,9 @@ optimal multiplier.
 
 \begin{table}[t]
 \centering
-\caption{Transfer summary. The primary Qwen3-8B GRPO, Qwen3-1.7B, and matched
-Llama comparisons have three seeds; DAPO is an aggregate result.}
+\caption{Transfer summary. $J$ denotes matched support Jaccard. The primary
+Qwen3-8B GRPO, Qwen3-1.7B, and matched Llama comparisons have three seeds;
+DAPO is an aggregate result.}
 \label{tab:transfer}
 \small\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lcccc}
@@ -544,6 +552,7 @@ $\Delta$ & $+.01624$ & $+.00851$\\
 \end{tabular}
 \end{table}
 
+\subsection{Training overhead is modest and inference remains unchanged}
 On the 8$\times$ NVIDIA H200 setup used for these experiments (141\,GiB per
 GPU), median
 RL-step time is 12.007\,s for Dense and 13.207\,s for the recipe; mean peak
@@ -556,71 +565,60 @@ checkpointing and is not a pure training-throughput measure. These measurements
 support feasibility but are not a hardware-wide benchmark.
 
 \section{Discussion}\label{sec:discussion}
-The factorial suggests a simple empirical picture. Down-weighting the negative
-channel reduces a conflict-prone contribution, while dynamic top-$k$ prevents
-the high rate from being applied uniformly. Each intervention alone slows the
-dense high-rate degradation; together they are sufficient to exceed the native
-dense reference at the tested endpoint. Concentration, emergent-set agreement,
-and mask controls make it unlikely that the effect comes from choosing any 40\%
-of coordinates. They do not establish curvature control, optimality, or a
-universal causal mechanism.
+The factorial and controls support a conditional empirical picture.
+Down-weighting reduces exposure to a conflict-enriched contribution, while
+dynamic top-$k$ avoids applying the amplified global step uniformly. Together
+they expand the high-rate operating region under the tested protocol.
+Concentrated energy, seed-specific alignment, and density-matched mask controls
+argue against arbitrary 40\% selection as a sufficient explanation, while leaving
+curvature control, optimality, and the unique causal mechanism unresolved.
 
-The results also distinguish dynamic online selection from an offline oracle.
-The online method does not need a completed dense trajectory, yet its aggregate
-score is within 0.005 of that oracle. Conversely, freezing or using a static
-magnitude mask loses 0.015--0.025, indicating that support adaptation matters.
-This is consistent with dynamic sparse-training observations
-~\cite{evci2020rigl,you2020earlybird}, although the object here is an optimizer
-update rather than a permanently pruned network.
+Dynamic online selection also differs from an offline oracle. It requires no
+completed dense trajectory, yet approaches the oracle aggregate and exceeds
+frozen or static supports. This supports adaptation of optimizer-update
+coordinates rather than persistent pruning, consistent with the broader role
+of changing support in dynamic sparse training
+~\cite{evci2020rigl,you2020earlybird}.
 
-The negative-channel result has the same conditional scope. Negative samples
-can suppress incorrect generations and redistribute probability mass toward
-plausible alternatives, as observed by Zhu et al.~\cite{zhu2025negativereinforcement};
-uniform token penalties can also induce undesirable likelihood displacement,
-as observed by Deng et al.~\cite{deng2025negativegrad}. Our factorial adds a
-third axis: optimizer-scale exposure. It shows negligible benefit from global
-channel attenuation at the native rate but a large protective effect at
-$20\times$, especially when coupled to dynamic support selection. Thus the
-result reconciles rather than contradicts prior work: the negative channel can
-carry useful learning signal, while its unfiltered high-rate coordinate tail
-can constrain the usable step-size range.
+The negative-channel result is likewise conditional. Negative samples can
+carry useful learning signal~\cite{zhu2025negativereinforcement}, while uniform
+penalties can cause likelihood displacement~\cite{deng2025negativegrad}. Our
+factorial adds optimizer-scale exposure: attenuation has little effect at the
+native rate and becomes protective at the largest rate. The result therefore
+positions the conflict-prone coordinate tail as a constraint on usable step
+size, rather than negative reinforcement as a generally harmful objective.
 
 \paragraph{Limitations.}
-The endpoint dense-$1\times$/recipe-$20\times$ interval uses three matched
-seeds and is reported as a nominal descriptive interval: it strengthens the
-paired contrast but covers a narrow source of randomness and does not correct
-for choosing an endpoint after inspecting the full ladder. The learning-rate
-ladder ends at $20\times$, and four mask snapshots over 160 RL steps cannot
-reveal a later stability boundary or continuous support churn. Transfer is limited to
-math RLVR, two model families, and mostly aggregate controls; the three-seed
-Qwen3-1.7B result shows only a modest
-$+0.00851\pm0.00628$ non-AIME Mean2 gain. The primary factorial holds AdamW
-constants fixed across cells; a separate lightly tuned dense $20\times$ check
-recovers only to 0.383 and still trails both dense $1\times$ and the Spine
-recipe. The paper therefore claims a matched-protocol high-rate operating
-region, not universal superiority over every retuned dense optimizer. Longer
-horizons, broader tasks, and heavier dense retuning remain open comparisons.
-Earlier Llama continuations included one learning-rate mismatch and two
-high-rate collapses, further showing that the transfer is protocol-sensitive.
+The evidence is limited to three seeds, four mask snapshots over 160 RL steps,
+math RLVR, two model families, and finite dense retuning. The endpoint interval
+covers only matched seed variation and is not selection-adjusted. The ladder
+ends at $20\times$,
+and four mask snapshots cannot reveal a later stability boundary or continuous
+support churn. Transfer gains are modest and vary across benchmarks; the tuned
+dense arm also shows that part of the degradation is schedule-sensitive.
+Longer horizons, broader tasks, and more extensive dense retuning are needed to
+map the boundary and scope of the observed operating region; the present claim
+is not universal superiority over every retuned dense optimizer.
 
 \section{Conclusion}
-A 16-cell, three-seed factorial shows that dense RLVR degrades as the learning
-rate rises, whereas a dynamic 40\% coordinate mask combined with
-negative-channel down-weighting improves through the largest tested rate. Its
-paired gain over dense $1\times$ is 0.019 Mean4 (nominal 95\% paired interval
-$[0.0124,0.0256]$). The selected support concentrates update energy, aligns
-seed-specifically with dense-emergent coordinates, and outperforms arbitrary
-mask controls. Together, these results identify a reproducible high-rate
-operating region and the coordinate structure that supports it.
+A 16-cell, three-seed factorial shows that negative-advantage exposure and
+dynamic optimizer-coordinate support jointly shape high-rate RLVR. The
+\recipe{} recipe gains 0.019 Mean4 over dense $1\times$ at the largest tested
+rate. Its support concentrates update energy, aligns seed-specifically with
+dense-emergent coordinates, and exceeds structured nulls and density-matched
+mask controls. These results identify a reproducible, protocol-dependent
+high-rate operating region and provide an operational tool for studying its
+coordinate structure.
 
 \section*{Reproducibility statement}
 The accompanying artifact contains seed-level result tables, resolved
 configuration digests, and scripts that recompute every reported aggregate from
 those tables. Cross-cluster run and environment records are included as an
 author-attested export; local verification covers package structure, protocol
-fields, counts, and file integrity within the release, and does not remount
-remote raw checkpoints. Large checkpoints remain available from the
-corresponding author subject to storage and license constraints.
+fields, counts, and file integrity within the release, and does not remount or
+redistribute remote raw masks or checkpoints. Large checkpoints remain
+available from the corresponding author subject to storage and license
+constraints.
 
 \appendix
 \section{Learning-rate and state verification}\label{app:audit}
@@ -664,6 +662,12 @@ top-$p=1.0$, with the same 8,192-token response cap. The canonical machine-
 readable contract and its digest are included in
 \texttt{evaluation\_and\_training\_protocol.json}.
 
+The exploratory tuned-dense diagnostic changes only three optimizer settings:
+16 warmup steps, global gradient clipping at 0.5, and $\beta_1=0.8$. Its
+Mean4 and endpoint diagnostic ranges are released as an aggregate record;
+matched seed-level uncertainty is unavailable, so it is not pooled with the
+factorial or used as a tuned-dense optimum.
+
 \section{Llama exploratory conflict record}\label{app:llama}
 The excluded D18 run requested $10^{-4}$ but logged $5\times10^{-6}$ and ended
 at step 56 with reward $-1$, AIME accuracy 0, entropy 0.021, response clip ratio
@@ -703,7 +707,9 @@ DAPO-Math-17K, AIME25, and VERL are used under Apache-2.0; Llama-3.1 uses its
 Community License and Acceptable Use Policy; OlympiadBench uses MIT. Because the
 referenced MATH500 and AIME24 cards do not declare a license, the artifact
 releases their hashes, identities, counts, and aggregate results but not their
-problem text. The complete resource matrix is in
+problem text. The public mask evidence likewise consists of verified identity,
+protocol, and hash records rather than the remote raw mask files. The complete
+resource matrix is in
 \texttt{LICENSE\_AND\_DATA\_USE.md}. Checkpoint redistribution remains subject
 to all upstream model and data terms.
 

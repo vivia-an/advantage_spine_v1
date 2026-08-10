@@ -150,7 +150,7 @@ else:
     close('Qwen3-1.7B transfer recipe',float(q17_transfer['recipe_mean4']),q17_summary[('Recipe','mean4')])
 stab={r['condition']:r for r in stability}
 for condition,reward,kl,entropy,clip,degraded in [
-    ('Dynamic Spine 20x',.080,.030,.250,.100,0),
+    ('Spine recipe 20x',.080,.030,.250,.100,0),
     ('Dense 20x',-.150,.090,.150,.650,1)]:
     r=stab.get(condition)
     if r is None: fail.append(f'missing stability row {condition}'); continue

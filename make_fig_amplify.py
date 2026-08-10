@@ -14,7 +14,7 @@ specs = [
     (("Dense", "1.0"), "Dense, $\\lambda=1$", P["red"], "--", "X"),
     (("Dense", "0.1"), "Dense, $\\lambda=0.1$", P["blue"], ":", "s"),
     (("Top-0.4", "1.0"), "Top-0.4, $\\lambda=1$", P["green"], "-.", "^"),
-    (("Top-0.4", "0.1"), "Dynamic Spine", P["accent"], "-", "o"),
+    (("Top-0.4", "0.1"), "Spine recipe", P["accent"], "-", "o"),
 ]
 
 fig, ax = plt.subplots(figsize=(5.65, 3.25))

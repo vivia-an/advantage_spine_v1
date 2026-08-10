@@ -13,7 +13,9 @@ contrasts, and cross-file consistency checks. It also includes the normalized
 cross-cluster audit export: run identities, protocol metadata, reported
 artifact digests, corrected timestamps, and a locally recomputed package
 manifest. PROVENANCE.json distinguishes source-reported digests from files
-available for local byte-level verification. Checkpoints are available only
+available for local byte-level verification. The public mask evidence consists
+of verified identity, protocol, and hash records, not the remote raw mask
+files. Checkpoints are available only
 when redistribution is permitted by the corresponding upstream model and data
 terms. LICENSE_AND_DATA_USE.md records the resource-level license and
 redistribution boundary. In particular, the artifact does not redistribute
