@@ -14,8 +14,8 @@ import figstyle
 
 # Canonical audited callouts. verify_numbers.py checks these against the CSVs.
 DENSE20_MEAN4 = 0.340
-SPINE20_MEAN4 = 0.445
-GAIN_VS_DENSE20 = 0.105
+SPINE20_MEAN4 = 0.44500323
+GAIN_VS_DENSE20 = 0.10500323
 NONZERO_RATIO = 0.393
 ENERGY_KEPT = 0.850
 JACCARD_MEAN = 0.600
@@ -93,7 +93,7 @@ ax.text(34.8, 36.1, "B", fontsize=8.2, fontweight="bold", color=INK,
 ax.text(38.8, 36.2, "Dynamic Advantage Spine", fontsize=8.1,
         fontweight="bold", color=INK, va="center")
 matrix_stack(38.0, selected=True)
-ax.text(46.9, 5.2, "per-tensor top 40% of pre-mask AdamW update",
+ax.text(46.9, 5.2, "per-tensor top 40% of adaptive Adam direction",
         ha="center", fontsize=6.1, color=BODY)
 ax.text(46.9, 2.6, "support refreshed every optimization step",
         ha="center", fontsize=6.1, color=AMBER, fontweight="bold")
@@ -108,7 +108,7 @@ ax.text(70.8, 36.2, "Observed at the tested limit", fontsize=8.1,
 
 metric_rows = [
     ("coordinates retained", f"{100*NONZERO_RATIO:.1f}%"),
-    ("update energy retained", f"{100*ENERGY_KEPT:.1f}%"),
+    ("direction energy retained", f"{100*ENERGY_KEPT:.1f}%"),
     ("support Jaccard", rf"${JACCARD_MEAN:.3f}\,\pm\,{JACCARD_SD:.3f}$"),
 ]
 for i, (label, value) in enumerate(metric_rows):

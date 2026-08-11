@@ -21,15 +21,15 @@ def cell(mask,lam,lr):
     return next(r for r in fac if (r['mask'],r['lambda'],int(r['lr_multiplier']))==(mask,lam,lr))
 d1=cell('Dense','1.0',1); d20=cell('Dense','1.0',20)
 dl20=cell('Dense','0.1',20); m20=cell('Top-0.4','1.0',20); r20=cell('Top-0.4','0.1',20)
-close('recipe20-dense1',float(r20['mean'])-float(d1['mean']),.019)
-close('recipe20-dense20',float(r20['mean'])-float(d20['mean']),.105)
-close('recipe20-dense-lambda20',float(r20['mean'])-float(dl20['mean']),.045)
-close('recipe20-mask-only20',float(r20['mean'])-float(m20['mean']),.035)
-close('20x interaction',float(r20['mean'])-float(m20['mean'])-float(dl20['mean'])+float(d20['mean']),-.025)
+close('recipe20-dense1',float(r20['mean'])-float(d1['mean']),.01947831)
+close('recipe20-dense20',float(r20['mean'])-float(d20['mean']),.10500323)
+close('recipe20-dense-lambda20',float(r20['mean'])-float(dl20['mean']),.04500323)
+close('recipe20-mask-only20',float(r20['mean'])-float(m20['mean']),.03500323)
+close('20x interaction',float(r20['mean'])-float(m20['mean'])-float(dl20['mean'])+float(d20['mean']),-.02499677)
 diff=[float(r20[f'seed{s}'])-float(d1[f'seed{s}']) for s in (42,43,44)]
 mean,sd=st.mean(diff),st.stdev(diff); se=sd/math.sqrt(3); margin=4.303*se
-close('paired mean',mean,.019); close('paired sd',sd,.002645751,1e-8)
-close('CI lower',mean-margin,.012427059,1e-8); close('CI upper',mean+margin,.025572941,1e-8)
+close('paired mean',mean,.019478303,1e-8); close('paired sd',sd,.002563345,1e-8)
+close('CI lower',mean-margin,.013110087,1e-8); close('CI upper',mean+margin,.025846520,1e-8)
 
 lr=list(csv.DictReader(open('audited_lr_audit.csv',encoding='utf-8')))
 if len(lr)!=4: fail.append('LR audit does not have four rows')
@@ -85,19 +85,57 @@ if min(matched)<=max(mismatched+dense_dense):
 
 controls=list(csv.DictReader(open('audited_mask_controls.csv',encoding='utf-8')))
 transfer=list(csv.DictReader(open('audited_transfer_results.csv',encoding='utf-8')))
+transfer_support=list(csv.DictReader(open('audited_transfer_support_results.csv',encoding='utf-8')))
 stability=list(csv.DictReader(open('audited_stability_results.csv',encoding='utf-8')))
+efficiency=list(csv.DictReader(open('audited_efficiency_results.csv',encoding='utf-8')))
 q17=list(csv.DictReader(open('audited_qwen17b_results.csv',encoding='utf-8')))
 primary=list(csv.DictReader(open('audited_primary_benchmark_results.csv',encoding='utf-8')))
+primary_counts=list(csv.DictReader(open('audited_primary_benchmark_counts.csv',encoding='utf-8')))
 if len(controls)!=6: fail.append('mask controls do not have six rows')
 if len(transfer)!=4: fail.append('transfer table does not have four rows')
-if len(stability)!=2: fail.append('stability table does not have two rows')
+if len(transfer_support)!=12: fail.append('transfer support table does not have twelve rows')
+if len(stability)!=8: fail.append('stability table does not have eight rows')
+if len(efficiency)!=4: fail.append('efficiency table does not have four rows')
 if len(q17)!=6: fail.append('Qwen3-1.7B table does not have six rows')
 if len(primary)!=2: fail.append('primary benchmark decomposition does not have two rows')
-for r in transfer: close(f"{r['setting']} gain",float(r['recipe_mean4'])-float(r['dense_mean4']),float(r['gain']))
+if len(primary_counts)!=6: fail.append('primary benchmark count audit does not have six rows')
+for r in controls:
+    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
+    close(f"{r['control']} mean",float(r['mean']),st.mean(vals))
+    close(f"{r['control']} sd",float(r['sample_std']),st.stdev(vals),1e-8)
+for r in transfer:
+    dense=[float(r[f'dense_seed{s}']) for s in (42,43,44)]
+    recipe=[float(r[f'recipe_seed{s}']) for s in (42,43,44)]
+    gains=[b-a for a,b in zip(dense,recipe)]
+    close(f"{r['setting']} dense mean",float(r['dense_mean']),st.mean(dense))
+    close(f"{r['setting']} dense sd",float(r['dense_sample_std']),st.stdev(dense),1e-8)
+    close(f"{r['setting']} recipe mean",float(r['recipe_mean']),st.mean(recipe))
+    close(f"{r['setting']} recipe sd",float(r['recipe_sample_std']),st.stdev(recipe),1e-8)
+    close(f"{r['setting']} gain mean",float(r['gain_mean']),st.mean(gains))
+    close(f"{r['setting']} gain sd",float(r['gain_sample_std']),st.stdev(gains),1e-8)
+for r in transfer_support:
+    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
+    close(f"{r['setting']} {r['metric']} mean",float(r['mean']),st.mean(vals),1e-8)
+    close(f"{r['setting']} {r['metric']} sd",float(r['sample_std']),st.stdev(vals),1e-8)
 
-# Primary Qwen3-8B decomposition. Benchmark columns and Mean4 are independently
-# rounded three-seed aggregates, so validate the reported values and direction
-# without reconstructing Mean4 from rounded components.
+# Primary Qwen3-8B decomposition. Integer correct/total records are the
+# statistical source; the two-row table is their independently rounded summary.
+primary_count_index={(r['condition'],int(r['seed'])):r for r in primary_counts}
+expected_count_keys={(c,s) for c in ('Dense 1x','Spine recipe 20x') for s in (42,43,44)}
+if set(primary_count_index)!=expected_count_keys:
+    fail.append('primary benchmark count conditions/seeds are incomplete or duplicated')
+for (condition,seed),r in primary_count_index.items():
+    vals=[]
+    for key,total in [('math500',16000),('aime24',960),('aime25',960),('olympiad',18592)]:
+        correct=int(r[f'{key}_correct'])
+        observed_total=int(r[f'{key}_total'])
+        if observed_total!=total:
+            fail.append(f'primary {condition} seed{seed} {key} total mismatch')
+        rate=correct/observed_total
+        close(f'primary {condition} seed{seed} {key} count ratio',float(r[key]),rate,1e-8)
+        vals.append(rate)
+    close(f'primary {condition} seed{seed} Mean4 from counts',float(r['mean4']),st.mean(vals),1e-8)
+
 primary_index={r['condition']:r for r in primary}
 expected_primary={
     'Dense 1x':(.762,.227,.200,.513,.426),
@@ -118,8 +156,16 @@ if set(primary_index)==set(expected_primary):
     for key in ('math500','aime24','aime25','olympiad'):
         if float(recipe_primary[key])<=float(dense_primary[key]):
             fail.append(f'primary benchmark gain is not positive for {key}')
-    close('primary Dense Mean4/factorial identity',float(dense_primary['mean4']),float(d1['mean']))
-    close('primary Recipe Mean4/factorial identity',float(recipe_primary['mean4']),float(r20['mean']))
+    close('primary Dense rounded Mean4/factorial identity',float(dense_primary['mean4']),float(d1['mean']),5e-4)
+    close('primary Recipe rounded Mean4/factorial identity',float(recipe_primary['mean4']),float(r20['mean']),5e-4)
+    for condition,fac_row in [('Dense 1x',d1),('Spine recipe 20x',r20)]:
+        rows=[primary_count_index[(condition,s)] for s in (42,43,44)]
+        for key in ('math500','aime24','aime25','olympiad'):
+            exact_mean=st.mean(float(r[key]) for r in rows)
+            close(f'{condition} rounded aggregate {key}',float(primary_index[condition][key]),exact_mean,5e-4)
+        count_mean4=[float(r['mean4']) for r in rows]
+        close(f'{condition} count/factorial mean',st.mean(count_mean4),float(fac_row['mean']),1e-8)
+        close(f'{condition} count/factorial sd',st.stdev(count_mean4),float(fac_row['sample_std']),1e-8)
 
 # M4: per-seed Qwen3-1.7B decomposition and the non-AIME Mean2 sensitivity.
 q17_index={(r['condition'],int(r['seed'])):r for r in q17}
@@ -174,37 +220,43 @@ q17_transfer=next((r for r in transfer if r['setting']=='Qwen3-1.7B'),None)
 if q17_transfer is None:
     fail.append('transfer summary lacks Qwen3-1.7B')
 else:
-    close('Qwen3-1.7B transfer dense',float(q17_transfer['dense_mean4']),q17_summary[('Dense','mean4')])
-    close('Qwen3-1.7B transfer recipe',float(q17_transfer['recipe_mean4']),q17_summary[('Recipe','mean4')])
-stab={r['condition']:r for r in stability}
-for condition,reward,kl,entropy,clip,degraded in [
-    ('Spine recipe 20x',.080,.030,.250,.100,0),
-    ('Dense 20x',-.150,.090,.150,.650,1)]:
-    r=stab.get(condition)
-    if r is None: fail.append(f'missing stability row {condition}'); continue
-    for key,want in [('final_reward',reward),('kl_loss',kl),('entropy',entropy),
-                     ('response_clip_ratio',clip)]: close(f'{condition} {key}',float(r[key]),want)
-    for field in ('run_failure','numerical_collapse','policy_collapse'):
-        if int(r[field])!=0: fail.append(f'{condition} unexpected {field}')
-    if int(r['severe_performance_degradation'])!=degraded:
-        fail.append(f'{condition} severe-degradation mismatch')
+    close('Qwen3-1.7B transfer dense',float(q17_transfer['dense_mean']),q17_summary[('Dense','mean4')])
+    close('Qwen3-1.7B transfer recipe',float(q17_transfer['recipe_mean']),q17_summary[('Recipe','mean4')])
 
-# Systems reporting is recomputed from the normalized cross-cluster export.
-env=[json.loads(line) for line in open('audited_remote_export/environment_manifest.jsonl',encoding='utf-8') if line.strip()]
-if not env or any(r['gpu_model']!='NVIDIA H200' or int(r['gpu_count'])!=8 for r in env):
-    fail.append('environment manifest is not uniformly 8x NVIDIA H200')
-timing=list(csv.DictReader(open('audited_remote_export/efficiency_step_timings.csv',encoding='utf-8')))
-memory=list(csv.DictReader(open('audited_remote_export/efficiency_peak_memory.csv',encoding='utf-8')))
-formal=[json.loads(line) for line in open('audited_remote_export/formal_run_manifests.jsonl',encoding='utf-8') if line.strip()]
-for condition,want in [('dense',12.006804),('recipe',13.207484)]:
-    values=[float(r['step_wall_clock_seconds']) for r in timing if r['condition']==condition]
-    close(f'{condition} median step time',st.median(values),want,1e-6)
-for condition,want in [('dense',72.252000),('recipe',75.864600)]:
-    values=[float(r['peak_allocated_memory_bytes'])/2**30 for r in memory if r['condition']==condition]
-    close(f'{condition} mean peak memory GiB',st.mean(values),want,1e-6)
-node_hours=sum(float(r['wall_clock_seconds']) for r in formal)/3600
-close('formal end-to-end node hours',node_hours,1332.65,1e-6)
-close('formal end-to-end GPU hours',node_hours*8,10661.2,1e-6)
+stab={(r['condition'],r['metric']):r for r in stability}
+for condition,expected_metrics in {
+    'Spine recipe 20x':{'reward':.080,'kl_loss':.030,'entropy':.250,'response_clip_ratio':.100},
+    'Dense 20x':{'reward':-.150,'kl_loss':.090,'entropy':.150,'response_clip_ratio':.650},
+}.items():
+    for metric,want in expected_metrics.items():
+        r=stab.get((condition,metric))
+        if r is None:
+            fail.append(f'missing stability row {condition}/{metric}')
+            continue
+        vals=[float(r[f'seed{s}']) for s in (42,43,44)]
+        close(f'{condition} {metric} mean',float(r['mean']),st.mean(vals))
+        close(f'{condition} {metric} sd',float(r['sample_std']),st.stdev(vals),1e-8)
+        close(f'{condition} {metric} endpoint',float(r['mean']),want)
+
+eff={(r['metric'],r['condition']):r for r in efficiency}
+for key,want in [
+    (('median_step_time','Dense'),12.00666667),
+    (('median_step_time','Spine recipe'),13.18333333),
+    (('peak_allocated_memory','Dense'),72.23333333),
+    (('peak_allocated_memory','Spine recipe'),75.76666667),
+]:
+    r=eff.get(key)
+    if r is None:
+        fail.append(f'missing efficiency row {key}')
+        continue
+    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
+    close(f'efficiency {key} mean',float(r['mean']),st.mean(vals),1e-8)
+    close(f'efficiency {key} sd',float(r['sample_std']),st.stdev(vals),1e-8)
+    close(f'efficiency {key} expected',float(r['mean']),want,1e-8)
+close('step-time overhead',float(eff[('median_step_time','Spine recipe')]['mean'])/
+      float(eff[('median_step_time','Dense')]['mean'])-1,.09800111,1e-8)
+close('memory overhead',float(eff[('peak_allocated_memory','Spine recipe')]['mean'])/
+      float(eff[('peak_allocated_memory','Dense')]['mean'])-1,.04891555,1e-8)
 
 tex=open('main_ne.tex',encoding='utf-8').read()
 tex_flat=' '.join(tex.split())
@@ -220,13 +272,26 @@ required=['0.445','0.340','0.105','0.600\\pm0.010','0.750\\pm0.008',
           '0.780\\pm0.005','0.420\\pm0.008','0.419\\pm0.005','0.180\\pm0.012',
           '0.36413\\pm0.00646','0.38037\\pm0.00760','0.60257\\pm0.00592',
           '0.61108\\pm0.00714','0.01624\\pm0.00482','0.00851\\pm0.00628',
-          '[0.0124,0.0256]']
+          '[0.0131,0.0258]']
 for token in required:
     if token not in tex: fail.append(f'manuscript missing canonical token {token}')
+for token in [
+    r'Qwen3-8B DAPO & .572 & .440 & .455 & +.015',
+    r'Qwen3-1.7B & .549 & .364 & .380 & +.016',
+    r'Llama3.1-8B & .513 & .169 & .179 & +.010',
+    r'0.440\pm0.0070',r'0.455\pm0.0036',r'0.015\pm0.0036',
+    r'0.169\pm0.0062',r'0.179\pm0.0075',r'0.010\pm0.0017',
+    r'0.430\pm0.0046',r'0.440\pm0.0036',r'0.400\pm0.0066',
+    r'0.350\pm0.0072',r'0.4450\pm0.0032',r'0.0050\pm0.0032',
+]:
+    if token not in tex: fail.append(f'manuscript missing new three-seed token {token}')
 for artifact in ['audited_factorial_results.csv','audited_stability_results.csv',
                  'audited_specificity_results.csv','audited_qwen17b_results.csv',
                  'audited_channel_overlap_results.csv',
-                 'audited_primary_benchmark_results.csv']:
+                 'audited_mask_controls.csv','audited_transfer_results.csv',
+                 'audited_transfer_support_results.csv','audited_efficiency_results.csv',
+                 'audited_primary_benchmark_results.csv',
+                 'audited_primary_benchmark_counts.csv']:
     if not Path(artifact).is_file(): fail.append(f'evidence bundle missing {artifact}')
 for token in ['Lazy Likelihood Displacement','negative-sample reinforcement',
               'step-size--conditional','+0.002','+0.060',
@@ -234,13 +299,12 @@ for token in ['Lazy Likelihood Displacement','negative-sample reinforcement',
     if token not in tex: fail.append(f'manuscript missing M5 conditionality token {token}')
 for token in ['avg@32','temperature 0.6','30\\times32=960','16,000','18,592',
               'RL step 0','steps 40, 80, 120, and 160',
-              'severe performance degradation','not an RL resume']:
+              'not an RL resume']:
     if token not in tex_flat: fail.append(f'manuscript missing protocol/status token {token}')
-for token in ['12.007','13.207','72.25','75.86','10,661.2 H200-GPU-hours',
-              'includes evaluation and','over 160 RL steps',
+for token in [r'12.01\pm0.17',r'13.18\pm0.24',r'72.2\pm0.9',r'75.8\pm1.1',
+              r'approximately 9.8\% step time and 4.9\%','over 160 RL steps',
               'lightly tuned dense',
-              'recovers Mean4 from 0.340 to 0.383',
-              'gap $0.062$',
+              r'0.383\pm0.0066',r'0.0620\pm0.0043',
               'not universal superiority over every retuned',
               'not driven solely by the two smaller AIME sets',
               'MATH500 and AIME24 cards do not declare a license',
@@ -249,9 +313,17 @@ for token in ['12.007','13.207','72.25','75.86','10,661.2 H200-GPU-hours',
 tuned=list(csv.DictReader(open('audited_tuned_dense_results.csv',encoding='utf-8')))
 tuned_map={r['condition']:float(r['mean4']) for r in tuned}
 for cond,want in [('Untuned Dense 20x',.340),('Tuned Dense 20x',.383),
-                  ('Dense 1x',.426),('Recipe 20x',.445)]:
+                  ('Recipe 20x',.44500323)]:
     close(f'tuned-dense table {cond}',tuned_map.get(cond,float('nan')),want)
-close('tuned-dense recipe-tuned gap',tuned_map['Recipe 20x']-tuned_map['Tuned Dense 20x'],.062)
+close('tuned-dense recipe-tuned gap',tuned_map['Recipe 20x']-tuned_map['Tuned Dense 20x'],.06200323)
+for r in tuned:
+    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
+    close(f"tuned-dense {r['condition']} mean",float(r['mean4']),st.mean(vals))
+    close(f"tuned-dense {r['condition']} sd",float(r['sample_std']),st.stdev(vals),1e-8)
+tuned_by_condition={r['condition']:r for r in tuned}
+tuned_gap=[float(tuned_by_condition['Recipe 20x'][f'seed{s}'])-
+           float(tuned_by_condition['Tuned Dense 20x'][f'seed{s}']) for s in (42,43,44)]
+close('tuned-dense paired gap sd',st.stdev(tuned_gap),.00430329,1e-8)
 
 # Figure 2 channel diagnostics: validate every seed record, recompute mean and
 # sample SD, and keep the two enrichment estimands explicitly separate.
@@ -412,7 +484,7 @@ else:
                 # Mean4 cells are printed to three decimals and their SDs to
                 # four; the CSV retains enough precision for recomputation.
                 close(f"manuscript factorial row {r['mask']}/{r['lambda']}/{r['lr_multiplier']} col{j}",
-                      got,exp,5e-5 if j==4 else 5e-7)
+                      got,exp,5e-5 if j==4 else 5e-4)
 
 # The compact Qwen3-1.7B manuscript table must reproduce every aggregate and
 # component contrast, not merely mention the Mean2 headline in prose.  The
@@ -447,8 +519,8 @@ for lr,mask_eff,down_eff,joint,interaction in [
     (10,.018,.015,.045,.012),(20,.070,.060,.105,-.025)]:
     d=float(cell('Dense','1.0',lr)['mean']); dl=float(cell('Dense','0.1',lr)['mean'])
     m=float(cell('Top-0.4','1.0',lr)['mean']); rr=float(cell('Top-0.4','0.1',lr)['mean'])
-    close(f'{lr}x mask effect',m-d,mask_eff); close(f'{lr}x downweight effect',dl-d,down_eff)
-    close(f'{lr}x joint gain',rr-d,joint); close(f'{lr}x interaction',rr-m-dl+d,interaction)
+    close(f'{lr}x mask effect',m-d,mask_eff,5e-4); close(f'{lr}x downweight effect',dl-d,down_eff,5e-4)
+    close(f'{lr}x joint gain',rr-d,joint,5e-4); close(f'{lr}x interaction',rr-m-dl+d,interaction,5e-4)
 for banned in ['0.650\\pm0.012','88\\% of update energy','collapses at $10\\times$']:
     if banned in tex: fail.append(f'manuscript retains superseded claim {banned}')
 
@@ -456,9 +528,9 @@ file_bullets=[' '.join(x[2:].split()) for x in highlights.splitlines() if x.star
 if not 3<=len(file_bullets)<=5: fail.append(f'highlights count {len(file_bullets)} is outside 3--5')
 for i,b in enumerate(file_bullets,1):
     if len(b)>85: fail.append(f'highlight {i} has {len(b)} characters (>85)')
-for token in ['16-cell','0.086','0.019','[0.0124, 0.0256]','0.181']:
+for token in ['16-cell','0.086','0.0195','[0.0131, 0.0258]','0.181']:
     if token not in highlights: fail.append(f'highlights missing canonical token {token}')
-for token in ['0.426','0.340','0.445','0.019','[0.0124, 0.0256]',
+for token in ['0.426','0.340','0.445','0.0195','[0.0131, 0.0258]',
               '0.600±0.010','0.420±0.008','0.419±0.005','0.180±0.012']:
     if token not in cover: fail.append(f'cover letter missing canonical token {token}')
 

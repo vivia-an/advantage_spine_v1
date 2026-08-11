@@ -8,6 +8,8 @@ reviewed and edited all AI-assisted outputs, independently verified the
 references, data-derived quantities, and scientific claims, and take full
 responsibility for the content of the published article. These tools were not
 used to generate or alter experimental observations or to synthesize image
-content. All tables, the graphical abstract, and the manuscript figures were
+content. Synthetic schema-testing fixtures used during internal software
+validation are excluded from the evidence release and from all reported
+results. All tables, the graphical abstract, and the manuscript figures were
 produced deterministically from author-verified data using conventional code;
 all AI-assisted code was reviewed and executed under author control.

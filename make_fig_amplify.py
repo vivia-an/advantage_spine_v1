@@ -28,7 +28,7 @@ for (mask, lam), label, color, ls, marker in specs:
 
 ax.axhline(0.426, color=P["muted"], lw=0.9, ls=(0, (3, 2)), zorder=1)
 ax.text(1.05, 0.429, "Dense 1× reference", fontsize=6.5, color=P["muted"])
-ax.annotate("+0.019\n95% paired CI\n[0.0124, 0.0256]",
+ax.annotate("+0.0195\n95% paired CI\n[0.0131, 0.0258]",
             xy=(20, 0.445), xytext=(11.0, 0.466), ha="center", va="bottom",
             fontsize=7.2, color=P["accent"],
             arrowprops=dict(arrowstyle="->", color=P["accent"], lw=0.8))

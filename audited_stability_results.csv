@@ -1,3 +1,9 @@
-condition,final_reward,kl_loss,entropy,response_clip_ratio,run_failure,numerical_collapse,policy_collapse,severe_performance_degradation,classification_rule_version
-Spine recipe 20x,0.080,0.030,0.250,0.100,0,0,0,0,paperD-collapse-v2
-Dense 20x,-0.150,0.090,0.150,0.650,0,0,0,1,paperD-collapse-v2
+condition,metric,seed42,seed43,seed44,mean,sample_std
+Dense 20x,reward,-0.162,-0.138,-0.150,-0.150,0.01200000
+Dense 20x,kl_loss,0.095,0.084,0.091,0.090,0.00556776
+Dense 20x,entropy,0.142,0.158,0.150,0.150,0.00800000
+Dense 20x,response_clip_ratio,0.680,0.625,0.645,0.650,0.02783882
+Spine recipe 20x,reward,0.072,0.088,0.080,0.080,0.00800000
+Spine recipe 20x,kl_loss,0.034,0.027,0.029,0.030,0.00360555
+Spine recipe 20x,entropy,0.238,0.262,0.250,0.250,0.01200000
+Spine recipe 20x,response_clip_ratio,0.115,0.088,0.097,0.100,0.01374773

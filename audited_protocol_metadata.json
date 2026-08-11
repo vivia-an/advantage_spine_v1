@@ -146,8 +146,10 @@
     "output_root": "/volume/posttrain/users/lsk/nvc-repo/sgd_rlvr_reproduce/checkpoints/paperD_rl160",
     "present_in_current_checkout": false,
     "per_run_actual_checksums_synced": false,
-    "normalized_cross_cluster_audit_present": true,
-    "normalized_audit_evidence_level": "source-attested with local package-integrity verification",
+    "normalized_cross_cluster_audit_present": false,
+    "normalized_audit_evidence_level": "author-attested seed-level result tables with local arithmetic verification",
+    "primary_qwen8b_count_audit": "per-seed integer correct/total records for Dense 1x and Spine recipe 20x",
+    "primary_qwen8b_statistics_source": "unrounded rates reconstructed from integer counts",
     "remote_raw_artifacts_mounted_locally": false
   }
 }

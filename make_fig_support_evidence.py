@@ -51,7 +51,7 @@ gs = fig.add_gridspec(2, 2, width_ratios=[0.92, 1.38],
 # A: concentration. Equal-length tracks make the retained-vs-residual split
 # comparable without using two unrelated axes.
 ax = fig.add_subplot(gs[0, 0])
-labels = ["Coordinates", "Update energy"]
+labels = ["Adaptive support", "Direction energy"]
 kept = [.393, .850]
 colors = ["#c99e5a", P["accent"]]
 for y, (label, value, color) in enumerate(zip(labels, kept, colors)):
@@ -65,7 +65,7 @@ ax.set_yticks([0, 1], labels)
 ax.set_xlim(0, 1)
 ax.set_xlabel("fraction retained")
 ax.invert_yaxis()
-panel_title(ax, "A", "A small support carries most update energy")
+panel_title(ax, "A", "A small support carries most direction energy")
 for side in ("top", "right", "left"):
     ax.spines[side].set_visible(False)
 
@@ -121,13 +121,17 @@ panel_title(ax, "C", "Alignment exceeds structured nulls")
 # D: outcome controls in a compact dot-range chart.
 ax = fig.add_subplot(gs[1, 1])
 control_labels = [r["control"] for r in control_rows][::-1]
-control_values = [float(r["mean4"]) for r in control_rows][::-1]
+control_values = [float(r["mean"]) for r in control_rows][::-1]
+control_sds = [float(r["sample_std"]) for r in control_rows][::-1]
 control_colors = [P["muted"], P["red"], P["blue"], P["green"],
                   "#c49a5a", P["accent"]]
 y = range(len(control_labels))
 ax.hlines(y, .33, control_values, color=control_colors, lw=2.2)
 ax.scatter(control_values, y, color=control_colors, s=35,
            edgecolors=P["edge"], linewidths=.4, zorder=3)
+for yi, value, sd, color in zip(y, control_values, control_sds, control_colors):
+    ax.errorbar(value, yi, xerr=sd, fmt="none", ecolor=color,
+                capsize=2.5, lw=.8, zorder=2)
 for yi, value in zip(y, control_values):
     ax.text(value+.0025, yi, f"{value:.3f}", va="center", fontsize=6.8)
 ax.axvline(.426, color=P["muted"], ls="--", lw=.9)
@@ -135,7 +139,7 @@ ax.text(.4245, 4.55, "Dense 1× reference", ha="right", va="center",
         fontsize=6.2, color=P["muted"])
 ax.set_yticks(list(y), control_labels)
 ax.set_xlim(.33, .463)
-ax.set_xlabel("Mean4 at 20× (reported aggregate)")
+ax.set_xlabel("Mean4 at 20× (three-seed mean)")
 ax.grid(axis="x", ls=":", alpha=.32)
 panel_title(ax, "D", "Dynamic support beats arbitrary controls")
 for side in ("top", "right", "left"):

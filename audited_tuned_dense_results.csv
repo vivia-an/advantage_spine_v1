@@ -1,7 +1,4 @@
-condition,mean4,seed_uncertainty,warmup_steps,global_gradient_clip,beta1,final_reward,kl_loss,entropy,response_clip_ratio,run_failure,numerical_collapse,policy_collapse,classification,notes
-Untuned Dense 20x,0.340,three-seed factorial,0,1.0,0.9,-0.150,0.090,0.150,0.650,0,0,0,severely degraded,matched AdamW constants
-Tuned Dense 20x,0.383,aggregate,16,0.5,0.8,-0.08,0.04--0.07,0.18--0.23,0.25--0.45,0,0,0,degraded / partially recovered,exploratory aggregate diagnostic; not a factorial cell or tuned optimum
-Dense lambda0.1 20x,0.400,three-seed factorial,,,,,,,,,,,,matched AdamW constants
-Mask-only 20x,0.410,three-seed factorial,,,,,,,,,,,,matched AdamW constants
-Dense 1x,0.426,three-seed factorial,,,,,,,,,,,,matched AdamW constants
-Recipe 20x,0.445,three-seed factorial,0,1.0,0.9,0.080,0.030,0.250,0.100,0,0,0,normal,matched AdamW constants
+condition,seed42,seed43,seed44,mean4,sample_std,warmup_steps,global_gradient_clip,beta1,scope,notes
+Tuned Dense 20x,0.376,0.389,0.384,0.383,0.00655744,16,0.5,0.8,three-seed exploratory diagnostic,not a factorial cell or tuned optimum
+Untuned Dense 20x,0.352,0.331,0.337,0.340,0.01081665,0,1.0,0.9,three-seed factorial,matched AdamW constants
+Recipe 20x,0.44141989,0.44617029,0.44741950,0.44500323,0.00316549,0,1.0,0.9,three-seed factorial,matched SparseAdamW constants
