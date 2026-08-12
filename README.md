@@ -31,7 +31,10 @@ The intended compiled artifact is `main_ne.pdf`.
 
 ## Audited evidence
 
-- `audited_factorial_results.csv` — 16 cells and 48 seed-level observations.
+- `audited_factorial_results.csv` — 16 cells and 48 seed-level observations;
+  the two primary endpoints retain count-derived precision, while other remote
+  seed exports and their pre-rounding mean/SD summaries are reported to four
+  decimals.
 - `audited_primary_benchmark_results.csv` — three-seed Dense/Recipe
   decomposition over Math500, AIME24, AIME25, Olympiad, and Mean4.
 - `audited_primary_benchmark_counts.csv` — primary Qwen3-8B per-seed integer

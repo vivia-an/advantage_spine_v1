@@ -5,6 +5,18 @@ Date: 2026-08-11
 ## Scope
 Clean public snapshot for the Neurocomputing submission and public GitHub artifact.
 
+## Full-factorial seed correction — 2026-08-13
+
+- Replaced the rounded seed-level values and sample SDs for the complete
+  Qwen3-8B 16-cell factorial with the remotely verified records.
+- Preserved count-derived precision for the Dense-1x and recipe-20x primary
+  endpoints; the other seed exports and their pre-rounding summaries are
+  reported to four decimals without manufacturing additional precision.
+- Regenerated the factorial figure and synchronized the manuscript table and
+  the untuned Dense-20x reference used by the tuned-dense audit.
+- The 16 cell means, factorial contrasts, primary paired gain, and nominal
+  paired interval are unchanged.
+
 ## Llama endpoint and declaration correction — 2026-08-13
 
 - Kept the Llama3.1-8B Dense/Recipe Mean4 endpoint from

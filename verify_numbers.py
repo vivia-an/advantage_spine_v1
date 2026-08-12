@@ -14,8 +14,14 @@ expected={(m,l,x) for m in ('Dense','Top-0.4') for l in ('1.0','0.1') for x in (
 if keys!=expected: fail.append("factorial design is incomplete or duplicated")
 for r in fac:
     vals=[float(r[f"seed{s}"]) for s in (42,43,44)]
-    close(f"{r['mask']}/{r['lambda']}/{r['lr_multiplier']} mean",float(r['mean']),st.mean(vals))
-    close(f"{r['mask']}/{r['lambda']}/{r['lr_multiplier']} sd",float(r['sample_std']),st.stdev(vals))
+    # Most remote factorial cells are exported at four decimals, while their
+    # mean/SD summaries were computed before that display rounding.  Permit at
+    # most half a unit in the last exported decimal; the two primary endpoints
+    # retain exact count-derived values and therefore pass much more tightly.
+    close(f"{r['mask']}/{r['lambda']}/{r['lr_multiplier']} mean",
+          float(r['mean']),st.mean(vals),5.1e-5)
+    close(f"{r['mask']}/{r['lambda']}/{r['lr_multiplier']} sd",
+          float(r['sample_std']),st.stdev(vals),5.1e-5)
 
 def cell(mask,lam,lr):
     return next(r for r in fac if (r['mask'],r['lambda'],int(r['lr_multiplier']))==(mask,lam,lr))
@@ -328,8 +334,8 @@ for cond,want in [('Untuned Dense 20x',.340),('Tuned Dense 20x',.383),
 close('tuned-dense recipe-tuned gap',tuned_map['Recipe 20x']-tuned_map['Tuned Dense 20x'],.06200323)
 for r in tuned:
     vals=[float(r[f'seed{s}']) for s in (42,43,44)]
-    close(f"tuned-dense {r['condition']} mean",float(r['mean4']),st.mean(vals))
-    close(f"tuned-dense {r['condition']} sd",float(r['sample_std']),st.stdev(vals),1e-8)
+    close(f"tuned-dense {r['condition']} mean",float(r['mean4']),st.mean(vals),5.1e-5)
+    close(f"tuned-dense {r['condition']} sd",float(r['sample_std']),st.stdev(vals),5.1e-5)
 tuned_by_condition={r['condition']:r for r in tuned}
 tuned_gap=[float(tuned_by_condition['Recipe 20x'][f'seed{s}'])-
            float(tuned_by_condition['Tuned Dense 20x'][f'seed{s}']) for s in (42,43,44)]

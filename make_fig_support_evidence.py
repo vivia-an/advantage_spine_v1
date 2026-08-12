@@ -125,12 +125,19 @@ ax.scatter(control_values, y, color=control_colors, s=34,
 for yi, value, sd, color in zip(y, control_values, control_sds, control_colors):
     ax.errorbar(value, yi, xerr=sd, fmt="none", ecolor=color,
                 capsize=2.5, lw=.8, zorder=2)
-    ax.text(value+.0025, yi, f"{value:.3f}", va="center", fontsize=7.0)
+    # Keep the estimates in a dedicated right-aligned column.  Placing each
+    # label next to its marker made the text collide with the error bar and,
+    # near .426, with the dense-reference line.
+    ax.text(.472, yi, f"{value:.3f}", ha="right", va="center",
+            fontsize=7.0, color=P["body"],
+            bbox=dict(facecolor="white", edgecolor="none", pad=.25,
+                      alpha=.92), zorder=5)
 ax.axvline(.426, color=P["muted"], ls="--", lw=.9)
-ax.text(.4245, 4.55, "Dense 1×", ha="right", va="center",
-        fontsize=6.7, color=P["muted"])
+ax.text(.426, 1.015, "Dense 1× = 0.426", ha="center", va="bottom",
+        transform=ax.get_xaxis_transform(), fontsize=6.7, color=P["muted"])
 ax.set_yticks(list(y), control_labels)
-ax.set_xlim(.33, .463)
+ax.set_xlim(.33, .474)
+ax.set_ylim(-.55, 5.45)
 ax.set_xlabel("Mean accuracy at 20×")
 ax.grid(axis="x", ls=":", alpha=.32)
 for side in ("top", "right", "left"):

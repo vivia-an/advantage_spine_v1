@@ -1,4 +1,4 @@
 condition,seed42,seed43,seed44,mean4,sample_std,warmup_steps,global_gradient_clip,beta1,scope,notes
 Tuned Dense 20x,0.376,0.389,0.384,0.383,0.00655744,16,0.5,0.8,three-seed exploratory diagnostic,not a factorial cell or tuned optimum
-Untuned Dense 20x,0.352,0.331,0.337,0.340,0.01081665,0,1.0,0.9,three-seed factorial,matched AdamW constants
+Untuned Dense 20x,0.3348,0.3524,0.3328,0.3400,0.0108,0,1.0,0.9,three-seed factorial,matched AdamW constants
 Recipe 20x,0.44141989,0.44617029,0.44741950,0.44500323,0.00316549,0,1.0,0.9,three-seed factorial,matched SparseAdamW constants
