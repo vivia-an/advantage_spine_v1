@@ -97,7 +97,7 @@ if len(transfer)!=4: fail.append('transfer table does not have four rows')
 if len(llama)!=8: fail.append('Llama LR ladder does not have eight rows')
 if len(transfer_support)!=12: fail.append('transfer support table does not have twelve rows')
 if len(stability)!=8: fail.append('stability table does not have eight rows')
-if len(efficiency)!=4: fail.append('efficiency table does not have four rows')
+if len(efficiency)!=3: fail.append('efficiency audit does not have three run records')
 if len(q17)!=6: fail.append('Qwen3-1.7B table does not have six rows')
 if len(primary)!=2: fail.append('primary benchmark decomposition does not have two rows')
 if len(primary_counts)!=6: fail.append('primary benchmark count audit does not have six rows')
@@ -257,25 +257,23 @@ for condition,expected_metrics in {
         close(f'{condition} {metric} sd',float(r['sample_std']),st.stdev(vals),1e-8)
         close(f'{condition} {metric} endpoint',float(r['mean']),want)
 
-eff={(r['metric'],r['condition']):r for r in efficiency}
-for key,want in [
-    (('median_step_time','Dense'),12.00666667),
-    (('median_step_time','Spine recipe'),13.18333333),
-    (('peak_allocated_memory','Dense'),72.23333333),
-    (('peak_allocated_memory','Spine recipe'),75.76666667),
-]:
-    r=eff.get(key)
-    if r is None:
-        fail.append(f'missing efficiency row {key}')
-        continue
-    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
-    close(f'efficiency {key} mean',float(r['mean']),st.mean(vals),1e-8)
-    close(f'efficiency {key} sd',float(r['sample_std']),st.stdev(vals),1e-8)
-    close(f'efficiency {key} expected',float(r['mean']),want,1e-8)
-close('step-time overhead',float(eff[('median_step_time','Spine recipe')]['mean'])/
-      float(eff[('median_step_time','Dense')]['mean'])-1,.09800111,1e-8)
-close('memory overhead',float(eff[('peak_allocated_memory','Spine recipe')]['mean'])/
-      float(eff[('peak_allocated_memory','Dense')]['mean'])-1,.04891555,1e-8)
+eff={(r['condition'],r['run']):r for r in efficiency}
+expected_efficiency={
+    ('Dense','dense'):(2273,1006,833,.0855,42.2,59.9),
+    ('Spine recipe','seed2'):(1487,632,562,.0821,45.9,66.8),
+    ('Spine recipe','seed3'):(1391,590,526,.0817,45.8,66.8),
+}
+if set(eff)!=set(expected_efficiency):
+    fail.append(f'efficiency run design mismatch: {sorted(set(eff)^set(expected_efficiency))}')
+efficiency_fields=('median_step_time_s','generation_time_s','update_actor_time_s',
+                   'actor_update_ms_per_token','peak_allocated_gib','peak_reserved_gib')
+for key,wants in expected_efficiency.items():
+    row=eff.get(key)
+    if row is None: continue
+    for field,want in zip(efficiency_fields,wants):
+        close(f'efficiency {key} {field}',float(row[field]),want,1e-12)
+    if float(row['generation_time_s'])+float(row['update_actor_time_s'])>float(row['median_step_time_s']):
+        fail.append(f'efficiency components exceed total step time for {key}')
 
 tex=open('main_ne.tex',encoding='utf-8').read()
 tex_flat=' '.join(tex.split())
@@ -316,13 +314,18 @@ for artifact in ['audited_factorial_results.csv','audited_stability_results.csv'
 for token in ['Lazy Likelihood Displacement','negative-sample reinforcement',
               'step-size--conditional','+0.002','+0.060',
               'do not infer that negative samples should generally']:
-    if token not in tex: fail.append(f'manuscript missing M5 conditionality token {token}')
+    if token not in tex_flat: fail.append(f'manuscript missing M5 conditionality token {token}')
 for token in ['avg@32','temperature 0.6','30\\times32=960','16,000','18,592',
               'RL step 0','steps 40, 80, 120, and 160',
               'not an RL resume']:
     if token not in tex_flat: fail.append(f'manuscript missing protocol/status token {token}')
-for token in [r'12.01\pm0.17',r'13.18\pm0.24',r'72.2\pm0.9',r'75.8\pm1.1',
-              r'approximately 9.8\% step time and 4.9\%','over 160 RL steps',
+for token in [r'$2273$\,s',r'$1006$\,s',r'$833$\,s',
+              r'$1391$ and $1487$\,s',r'$590$--$632$\,s',r'$526$--$562$\,s',
+              r'$0.0855$\,ms',r'$0.0817$--$0.0821$\,ms',
+              r'$42.2/59.9$\,GiB',r'$45.8$--$45.9/66.8$\,GiB',
+              'one dense run and two recipe runs',
+              'observed cost rather than establish a causal training-speed',
+              'over 160 RL steps',
               'lightly tuned dense',
               r'0.383\pm0.0066',r'0.0620\pm0.0043',
               'not universal superiority over every retuned',
@@ -420,9 +423,10 @@ for row in channel_rows:
     if row['unit'] in ('fraction','index') and not 0<=value<=1:
         fail.append(f'Figure 2 {row["metric"]}/{row["record_type"]} is outside [0,1]')
 for token in ['4.8\\%','1.7\\%','0.048^2=0.23\\%','7.4\\times',
-              '48\\% of signs agree and 52\\% conflict','Gini 0.70 and 0.63',
-              'top-1\\% energy','0.88 and 0.84']:
-    if token not in tex: fail.append(f'manuscript missing Figure 2 token {token}')
+              '48\\% of their signs agree and 52\\% conflict',
+              'Gini coefficients of 0.70 and 0.63',
+              'top-1\\% energy shares of 0.88 and 0.84']:
+    if token not in tex_flat: fail.append(f'manuscript missing Figure 2 token {token}')
 if 'audited_channel_overlap_results.csv' not in contam:
     fail.append('Figure 2 generator does not read the channel audit CSV')
 

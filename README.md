@@ -49,8 +49,8 @@ The intended compiled artifact is `main_ne.pdf`.
 - `audited_llama_lr_ladder.csv` — Llama3.1-8B three-seed LR ladder.
 - `audited_transfer_support_results.csv` — distinct three-seed support metrics
   for GRPO, DAPO, Qwen3-1.7B, and Llama3.1-8B.
-- `audited_efficiency_results.csv` — three-seed step-time and peak-memory
-  summaries.
+- `audited_efficiency_results.csv` — one dense and two recipe run-level timing,
+  actor-update, and CUDA allocated/reserved-memory records.
 - `audited_qwen17b_results.csv` — Qwen3-1.7B per-seed four-benchmark counts.
 - `audited_tuned_dense_results.csv` — three-seed exploratory tuned-dense
   $20\times$ diagnostic (0.383) with its exact tuning fields.
@@ -67,8 +67,10 @@ The intended compiled artifact is `main_ne.pdf`.
 - `submission_metadata.txt` — paste-ready verified author and affiliation
   metadata, with unknown system-only fields explicitly left for author input.
 - `graphical_abstract.pdf` / `.png` — graphical abstract.
-- Primary figures: `fig_concept`, `fig_contam`, `fig_amplify`,
-  `fig_support_evidence` (PDF/SVG + generators).
+- Primary figures: `fig_concept`, `fig_amplify`, the independent
+  `fig_contam_{overlap,sign}` panels, and the independent
+  `fig_support_{concentration,matrix,nulls,controls}` panels (PDF/SVG plus
+  deterministic generators).
 - `declarations/*.txt` — Editorial Manager paste-ready declarations.
 
 Verified e-mails are `lishikai@wchscu.edu.cn` for Shikai Li and

@@ -27,9 +27,9 @@ INK, BODY, MUTED = P["edge"], P["body"], P["muted"]
 RED, BLUE, AMBER, GREEN = P["red"], P["blue"], P["accent"], P["green"]
 rng = np.random.default_rng(17)
 
-fig, ax = plt.subplots(figsize=(7.45, 2.62))
+fig, ax = plt.subplots(figsize=(7.45, 2.42))
 ax.set_xlim(0, 100)
-ax.set_ylim(0, 40)
+ax.set_ylim(0, 38)
 ax.axis("off")
 
 
@@ -74,10 +74,8 @@ def arrow(x0, x1, label, sublabel):
             fontsize=5.7, color=MUTED)
 
 
-# A — dense high-rate update.
-ax.text(2.0, 36.1, "A", fontsize=8.2, fontweight="bold", color=INK,
-        bbox=dict(boxstyle="circle,pad=.18", fc=P["raw"], ec=INK, lw=.6))
-ax.text(6.0, 36.2, r"Dense update at $20\times$", fontsize=8.1,
+# Dense high-rate update.
+ax.text(5.2, 35.2, r"Dense update at $20\times$", fontsize=8.5,
         fontweight="bold", color=INK, va="center")
 matrix_stack(5.2, selected=False)
 ax.text(14.1, 4.2, "all coordinates receive the step",
@@ -87,10 +85,8 @@ ax.text(14.1, 1.45, f"Mean4 {DENSE20_MEAN4:.3f}  |  severe degradation",
 
 arrow(24.4, 34.0, "deconflict", r"$\lambda=0.1$")
 
-# B — dynamic coordinate selector.
-ax.text(34.8, 36.1, "B", fontsize=8.2, fontweight="bold", color=INK,
-        bbox=dict(boxstyle="circle,pad=.18", fc=P["spine"], ec=INK, lw=.6))
-ax.text(38.8, 36.2, "Dynamic Advantage Spine", fontsize=8.1,
+# Dynamic coordinate selector.
+ax.text(38.0, 35.2, "Dynamic coordinate support", fontsize=8.5,
         fontweight="bold", color=INK, va="center")
 matrix_stack(38.0, selected=True)
 ax.text(46.9, 5.2, "per-tensor top 40% of adaptive Adam direction",
@@ -100,10 +96,8 @@ ax.text(46.9, 2.6, "support refreshed every optimization step",
 
 arrow(57.3, 66.0, "evaluate", "matched seeds")
 
-# C — measured outcomes only.
-ax.text(66.8, 36.1, "C", fontsize=8.2, fontweight="bold", color=INK,
-        bbox=dict(boxstyle="circle,pad=.18", fc=P["decon"], ec=INK, lw=.6))
-ax.text(70.8, 36.2, "Observed at the tested limit", fontsize=8.1,
+# Measured outcomes only.
+ax.text(70.0, 35.2, "Measured at the tested limit", fontsize=8.5,
         fontweight="bold", color=INK, va="center")
 
 metric_rows = [
@@ -130,8 +124,7 @@ ax.text(83.2, 8.2, rf"Mean4 gain vs dense $20\times$: +{GAIN_VS_DENSE20:.3f}",
         ha="center", va="center", fontsize=6.5, color=GREEN,
         fontweight="bold")
 
-ax.text(50, -0.15,
-        "SCHEMATIC — dot positions are illustrative, not measured coordinates",
-        ha="center", va="bottom", fontsize=5.8, color=MUTED, style="italic")
+# SCHEMATIC: dot positions are illustrative, not measured coordinates.  The
+# disclosure is kept in the manuscript caption rather than repeated in-art.
 
 figstyle.save(fig, "fig_concept", pad=0.025)

@@ -1,5 +1,4 @@
-metric,condition,seed42,seed43,seed44,mean,sample_std,unit,aggregation
-median_step_time,Dense,11.82,12.15,12.05,12.00666667,0.16921387,seconds,per-run median over the measured window
-median_step_time,Spine recipe,12.95,13.42,13.18,13.18333333,0.23501773,seconds,per-run median over the measured window
-peak_allocated_memory,Dense,71.4,73.1,72.2,72.23333333,0.85049006,GiB_per_GPU,torch.cuda.max_memory_allocated
-peak_allocated_memory,Spine recipe,74.8,76.9,75.6,75.76666667,1.05987421,GiB_per_GPU,torch.cuda.max_memory_allocated
+condition,run,median_step_time_s,generation_time_s,update_actor_time_s,actor_update_ms_per_token,peak_allocated_gib,peak_reserved_gib,aggregation
+Dense,dense,2273,1006,833,0.0855,42.2,59.9,per-run medians and process-level CUDA peaks over the measured window
+Spine recipe,seed2,1487,632,562,0.0821,45.9,66.8,per-run medians and process-level CUDA peaks over the measured window
+Spine recipe,seed3,1391,590,526,0.0817,45.8,66.8,per-run medians and process-level CUDA peaks over the measured window

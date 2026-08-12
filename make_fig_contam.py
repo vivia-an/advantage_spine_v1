@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audited positive/negative channel support and tail concentration (Figure 2)."""
+"""Independent panels for audited channel overlap and sign conflict (Figure 2)."""
 import csv
 import matplotlib
 matplotlib.use("Agg")
@@ -19,38 +19,39 @@ enrichment = metric[("overlap_enrichment", "ratio_of_aggregate_quantities")]
 same_sign = metric[("same_sign_rate", "mean")]
 conflict = metric[("conflict_rate", "mean")]
 
-# Local upsizing for two-column readability (Figure 2).
+# Size each source at its final subfigure width so labels remain readable after
+# LaTeX placement.  Panel titles and letters belong to LaTeX, not the artwork.
 plt.rcParams.update({
-    "font.size": 10.0,
-    "axes.titlesize": 11.0,
-    "axes.labelsize": 10.0,
-    "xtick.labelsize": 9.2,
-    "ytick.labelsize": 9.2,
+    "font.size": 7.8,
+    "axes.labelsize": 7.6,
+    "xtick.labelsize": 7.0,
+    "ytick.labelsize": 7.0,
 })
 
-fig, (a, b) = plt.subplots(1, 2, figsize=(6.4, 2.85))
-a.bar([0, 1], [independent, overlap],
-      color=[P["muted"], P["accent"]], width=.58)
-a.set_xticks([0, 1])
-a.set_xticklabels(["independent\nreference", "measured\noverlap"])
-a.set_ylabel("shared-support fraction")
-a.set_title(f"Support overlap is {enrichment:.1f}× enriched",
-            fontsize=11.0, fontweight="bold")
-a.text(1, overlap + .0012, f"{enrichment:.1f}×", ha="center",
-       fontsize=10.0, color=P["accent"], fontweight="bold")
+fig, ax = plt.subplots(figsize=(1.72, 1.58))
+vals = [100 * independent, 100 * overlap]
+ax.bar([0, 1], vals, color=[P["muted"], P["accent"]], width=.58)
+ax.set_xticks([0, 1], ["independent", "measured"])
+ax.set_ylim(0, 2.05)
+ax.set_ylabel("Support overlap (%)")
+for x, value, color in zip([0, 1], vals, [P["muted"], P["accent"]]):
+    ax.text(x, value + .08, f"{value:.2f}%", ha="center", va="bottom",
+            fontsize=7.1, color=color, fontweight="bold")
+ax.grid(axis="y", ls=":", alpha=.32)
+fig.tight_layout(pad=.35)
+figstyle.save(fig, "fig_contam_overlap", pad=.015)
+plt.close(fig)
 
-b.bar([0, 1], [same_sign, conflict],
-      color=[P["blue"], P["red"]], width=.58)
-b.set_xticks([0, 1])
-b.set_xticklabels(["same sign", "conflicting sign"])
-b.set_ylim(0, .60)
-b.set_ylabel("share on common support")
-b.set_title("The common support is conflict-prone", fontsize=11.0, fontweight="bold")
-
-for ax in (a, b):
-    ax.grid(axis="y", ls=":", alpha=.35)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-
-fig.tight_layout()
-figstyle.save(fig, "fig_contam")
+fig, ax = plt.subplots(figsize=(1.72, 1.58))
+vals = [100 * same_sign, 100 * conflict]
+ax.bar([0, 1], vals, color=[P["blue"], P["red"]], width=.58)
+ax.set_xticks([0, 1], ["same sign", "conflict"])
+ax.set_ylim(0, 60)
+ax.set_ylabel("Shared coordinates (%)")
+for x, value, color in zip([0, 1], vals, [P["blue"], P["red"]]):
+    ax.text(x, value + 1.5, f"{value:.0f}%", ha="center", va="bottom",
+            fontsize=7.1, color=color, fontweight="bold")
+ax.grid(axis="y", ls=":", alpha=.32)
+fig.tight_layout(pad=.35)
+figstyle.save(fig, "fig_contam_sign", pad=.015)
+plt.close(fig)

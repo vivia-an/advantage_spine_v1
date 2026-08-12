@@ -5,6 +5,15 @@ Date: 2026-08-11
 ## Scope
 Clean public snapshot for the Neurocomputing submission and public GitHub artifact.
 
+## Performance-data correction — 2026-08-13
+
+- Replaced the earlier three-seed aggregate timing and memory summary with the
+  available run-level records: one dense run and two recipe runs.
+- Added generation time, actor-update time, actor-update milliseconds per token,
+  and CUDA allocated/reserved peaks to the efficiency audit.
+- Removed causal overhead and speedup language; the manuscript now reports
+  observed costs and explicitly states the unequal run coverage.
+
 ## Submission refresh — 2026-08-11
 
 - Added the corresponding-author e-mail and corrected Appendix A/B references.
