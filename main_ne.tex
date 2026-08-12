@@ -684,9 +684,9 @@ $(\beta_1,\beta_2)=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay 0.01,
 global gradient clipping at 1.0, a constant LR schedule, and no warmup.
 Training rollouts sample four responses at temperature 1.0 and top-$p=1.0$.
 Evaluation uses avg@32 at temperature 0.6 and
-top-$p=1.0$, with the same 8,192-token response cap. The canonical machine-
-readable contract and its digest are included in
-\texttt{evaluation\_and\_training\_protocol.json}.
+top-$p=1.0$, with the same 8,192-token response cap. The canonical
+machine-readable contract and its digest are included in
+\texttt{audited\_protocol\_metadata.json}.
 
 The exploratory tuned-dense diagnostic changes only three optimizer settings:
 16 warmup steps, global gradient clipping at 0.5, and $\beta_1=0.8$. Its
