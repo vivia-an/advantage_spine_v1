@@ -85,7 +85,6 @@ if min(matched)<=max(mismatched+dense_dense):
 
 controls=list(csv.DictReader(open('audited_mask_controls.csv',encoding='utf-8')))
 transfer=list(csv.DictReader(open('audited_transfer_results.csv',encoding='utf-8')))
-llama=list(csv.DictReader(open('audited_llama_lr_ladder.csv',encoding='utf-8')))
 transfer_support=list(csv.DictReader(open('audited_transfer_support_results.csv',encoding='utf-8')))
 stability=list(csv.DictReader(open('audited_stability_results.csv',encoding='utf-8')))
 efficiency=list(csv.DictReader(open('audited_efficiency_results.csv',encoding='utf-8')))
@@ -94,7 +93,6 @@ primary=list(csv.DictReader(open('audited_primary_benchmark_results.csv',encodin
 primary_counts=list(csv.DictReader(open('audited_primary_benchmark_counts.csv',encoding='utf-8')))
 if len(controls)!=6: fail.append('mask controls do not have six rows')
 if len(transfer)!=4: fail.append('transfer table does not have four rows')
-if len(llama)!=8: fail.append('Llama LR ladder does not have eight rows')
 if len(transfer_support)!=12: fail.append('transfer support table does not have twelve rows')
 if len(stability)!=8: fail.append('stability table does not have eight rows')
 if len(efficiency)!=3: fail.append('efficiency audit does not have three run records')
@@ -115,23 +113,13 @@ for r in transfer:
     close(f"{r['setting']} recipe sd",float(r['recipe_sample_std']),st.stdev(recipe),1e-8)
     close(f"{r['setting']} gain mean",float(r['gain_mean']),st.mean(gains))
     close(f"{r['setting']} gain sd",float(r['gain_sample_std']),st.stdev(gains),1e-8)
-llama_idx={(r['condition'],int(r['lr_multiplier'])):r for r in llama}
-if set(llama_idx)!={(c,x) for c in ('Dense','Recipe') for x in (1,5,10,20)}:
-    fail.append('Llama LR ladder is incomplete or duplicated')
-for key,r in llama_idx.items():
-    vals=[float(r[f'seed{s}']) for s in (42,43,44)]
-    close(f'Llama {key} mean',float(r['mean']),st.mean(vals),1e-8)
-    close(f'Llama {key} sd',float(r['sample_std']),st.stdev(vals),1e-8)
-if len(llama_idx)==8:
-    d=[float(llama_idx[('Dense',1)][f'seed{s}']) for s in (42,43,44)]
-    r=[float(llama_idx[('Recipe',20)][f'seed{s}']) for s in (42,43,44)]
-    gain=[b-a for a,b in zip(d,r)]
-    close('Llama Dense1 mean',st.mean(d),.169)
-    close('Llama Recipe20 mean',st.mean(r),.179)
-    close('Llama paired gain',st.mean(gain),.010)
-    close('Llama paired gain sd',st.stdev(gain),.001732051,1e-8)
-    close('Llama 10x-20x plateau',float(llama_idx[('Recipe',20)]['mean'])-
-          float(llama_idx[('Recipe',10)]['mean']),0,1e-8)
+llama_transfer=next((r for r in transfer if r['setting']=='Llama3.1-8B'), None)
+if llama_transfer is None:
+    fail.append('transfer table missing Llama3.1-8B row')
+else:
+    close('Llama Dense endpoint mean',float(llama_transfer['dense_mean']),.169)
+    close('Llama Recipe endpoint mean',float(llama_transfer['recipe_mean']),.179)
+    close('Llama paired gain',float(llama_transfer['gain_mean']),.010)
 for r in transfer_support:
     vals=[float(r[f'seed{s}']) for s in (42,43,44)]
     close(f"{r['setting']} {r['metric']} mean",float(r['mean']),st.mean(vals),1e-8)
@@ -306,7 +294,6 @@ for artifact in ['audited_factorial_results.csv','audited_stability_results.csv'
                  'audited_specificity_results.csv','audited_qwen17b_results.csv',
                  'audited_channel_overlap_results.csv',
                  'audited_mask_controls.csv','audited_transfer_results.csv',
-                 'audited_llama_lr_ladder.csv',
                  'audited_transfer_support_results.csv','audited_efficiency_results.csv',
                  'audited_primary_benchmark_results.csv',
                  'audited_primary_benchmark_counts.csv']:
@@ -547,8 +534,11 @@ for lr,mask_eff,down_eff,joint,interaction in [
     close(f'{lr}x joint gain',rr-d,joint,5e-4); close(f'{lr}x interaction',rr-m-dl+d,interaction,5e-4)
 for banned in ['0.650\\pm0.012','88\\% of update energy','collapses at $10\\times$']:
     if banned in tex: fail.append(f'manuscript retains superseded claim {banned}')
-for banned in ('D18','D18b','D18c','Llama exploratory conflict record'):
-    if banned in tex: fail.append(f'manuscript retains excluded Llama detail {banned}')
+for banned in ('D18','D18b','D18c','Llama exploratory conflict record',
+              'saturates at 10','audited_llama_lr_ladder','Reproducibility statement'):
+    if banned in tex: fail.append(f'manuscript retains excluded Llama/repro claim {banned}')
+if 'not an invariant optimal learning-rate multiplier' not in tex:
+    fail.append('manuscript missing Llama transfer-scope sentence')
 
 file_bullets=[' '.join(x[2:].split()) for x in highlights.splitlines() if x.startswith('- ')]
 if not 3<=len(file_bullets)<=5: fail.append(f'highlights count {len(file_bullets)} is outside 3--5')

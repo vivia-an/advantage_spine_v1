@@ -5,6 +5,14 @@ Date: 2026-08-11
 ## Scope
 Clean public snapshot for the Neurocomputing submission and public GitHub artifact.
 
+## Llama endpoint and declaration correction — 2026-08-13
+
+- Kept the Llama3.1-8B Dense/Recipe Mean4 endpoint from
+  `audited_transfer_results.csv` (0.169 → 0.179).
+- Removed the 10×–20× saturation claim and `audited_llama_lr_ladder.csv`.
+- Removed the Reproducibility statement; Data availability now states what is
+  public (tables, scripts, protocol, implementation, licenses, hashes).
+
 ## Performance-data correction — 2026-08-13
 
 - Replaced the earlier three-seed aggregate timing and memory summary with the

@@ -1,24 +1,14 @@
 Data availability
 
-Audited seed-level factorial results, learning-rate audit records, support
-identity measurements including the full cross-seed specificity matrix,
-positive/negative-channel overlap and tail-concentration diagnostics,
-Qwen3-8B primary-comparison and Qwen3-1.7B per-seed integer benchmark counts,
-three-seed mask controls,
-stability diagnostics, transfers, efficiency summaries, analysis scripts, and
-figure generators are included in the
-accompanying repository: https://github.com/vivia-an/advantage_spine_v1
-
-The repository ships verify_numbers.py, which reconstructs benchmark rates
-from the released integer correct/total records and recomputes all released
-seed-derived means, sample standard deviations, paired contrasts, and cross-file
-consistency checks. Synthetic schema fixtures and reconstructed manifests are
-not released as experimental evidence. The public mask evidence consists of
-author-attested seed-level support metrics, not the remote raw mask files or
-byte-level identities. Checkpoints are available only
-when redistribution is permitted by the corresponding upstream model and data
-terms. LICENSE_AND_DATA_USE.md records the resource-level license and
-redistribution boundary. In particular, the artifact does not redistribute
-MATH500 or AIME 2024 problem text because the referenced dataset cards do not
-declare a license; it releases their hashes, identities, counts, and aggregate
-results instead.
+Seed-level result tables for the reported experiments, including integer
+correct/total records for the primary Qwen3-8B comparison, together with
+scripts that recompute accuracies, means, sample standard deviations, paired
+contrasts, and figures, are available in the accompanying repository
+https://github.com/vivia-an/advantage_spine_v1. The repository also
+includes the machine-readable training protocol and the Advantage Spine
+implementation. Qwen3, DAPO-Math-17K, AIME25, and VERL are used under
+Apache-2.0; Llama-3.1 uses its Community License and Acceptable Use Policy;
+OlympiadBench uses MIT. Because the referenced MATH500 and AIME24 cards do not
+declare a license, the artifact releases their hashes, identities, counts, and
+aggregate results but not their problem text. The complete resource matrix is
+in LICENSE_AND_DATA_USE.md.

@@ -45,8 +45,8 @@ The intended compiled artifact is `main_ne.pdf`.
 - `audited_mask_controls.csv` — three-seed dynamic, frozen, oracle, static and
   null-mask controls.
 - `audited_stability_results.csv` — three-seed endpoint reward/KL/entropy/clip.
-- `audited_transfer_results.csv` — three-seed DAPO and cross-model Mean4.
-- `audited_llama_lr_ladder.csv` — Llama3.1-8B three-seed LR ladder.
+- `audited_transfer_results.csv` — three-seed DAPO and cross-model Mean4,
+  including the Llama3.1-8B Dense/Recipe endpoint.
 - `audited_transfer_support_results.csv` — distinct three-seed support metrics
   for GRPO, DAPO, Qwen3-1.7B, and Llama3.1-8B.
 - `audited_efficiency_results.csv` — one dense and two recipe run-level timing,
@@ -55,8 +55,7 @@ The intended compiled artifact is `main_ne.pdf`.
 - `audited_tuned_dense_results.csv` — three-seed exploratory tuned-dense
   $20\times$ diagnostic (0.383) with its exact tuning fields.
 - `verify_numbers.py` — recomputation and cross-file consistency guard.
-- The evidence level is author-attested seed-level result reproduction; raw
-  remote masks, checkpoints, and full logs are not redistributed.
+- The evidence level is author-attested seed-level result reproduction.
 - `LICENSE_AND_DATA_USE.md` — model/data/software redistribution boundaries.
 
 ## Submission files

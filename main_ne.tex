@@ -589,9 +589,8 @@ $0.00851\pm0.00628$, positive in all three seeds. The component result is mixed
 rather than universal: Math500 changes by $-0.0013$ while Olympiad changes by
 $+0.0184$. On a matched Llama3.1-8B rerun, Mean4 changes from
 $0.169\pm0.0062$ to $0.179\pm0.0075$ (paired gain $0.010\pm0.0017$).
-The Llama ladder saturates at 10--$20\times$ (both 0.179), unlike the monotonic
-Qwen3-8B ladder. The claim is therefore transfer of direction, not an invariant
-optimal multiplier.
+The gain is smaller than on Qwen3-8B, so the claim is transfer of direction,
+not an invariant optimal learning-rate multiplier.
 
 \begin{table}[t]
 \centering
@@ -697,17 +696,6 @@ mask controls. These results identify a reproducible, protocol-dependent
 high-rate operating region and provide an operational tool for studying its
 coordinate structure.
 
-\section*{Reproducibility statement}
-The accompanying artifact contains author-attested seed-level result tables,
-including integer correct/total records for the primary Qwen3-8B comparison,
-and scripts that recompute their rates, means, sample deviations, paired contrasts, and
-figures. The release does not present reconstructed manifests, generated hashes,
-or synthetic trajectories as raw experimental evidence. Remote raw masks,
-checkpoints, and full logs are not redistributed; the released evidence level is
-therefore seed-level result reproduction rather than byte-level rerun audit.
-Large checkpoints remain available from the corresponding author subject to
-storage and license constraints.
-
 \appendix
 \section{Learning-rate and state verification}\label{app:audit}
 \begin{table}[t]
@@ -780,19 +768,18 @@ produced deterministically from author-verified data using conventional code;
 all AI-assisted code was reviewed and executed under author control.
 
 \section*{Data availability}
-Result tables, analysis scripts, figure generators, the machine-readable
-protocol, and the Advantage Spine implementation are
-included in the accompanying open repository
-\url{https://github.com/vivia-an/advantage_spine_v1}. Qwen3,
-DAPO-Math-17K, AIME25, and VERL are used under Apache-2.0; Llama-3.1 uses its
-Community License and Acceptable Use Policy; OlympiadBench uses MIT. Because the
-referenced MATH500 and AIME24 cards do not declare a license, the artifact
-releases their hashes, identities, counts, and aggregate results but not their
-problem text. The public mask evidence consists of author-attested support
-metrics rather than the remote raw mask files. The complete
-resource matrix is in
-\texttt{LICENSE\_AND\_DATA\_USE.md}. Checkpoint redistribution remains subject
-to all upstream model and data terms.
+Seed-level result tables for the reported experiments, including integer
+correct/total records for the primary Qwen3-8B comparison, together with
+scripts that recompute accuracies, means, sample standard deviations, paired
+contrasts, and figures, are available in the accompanying repository
+\url{https://github.com/vivia-an/advantage_spine_v1}. The repository also
+includes the machine-readable training protocol and the Advantage Spine
+implementation. Qwen3, DAPO-Math-17K, AIME25, and VERL are used under
+Apache-2.0; Llama-3.1 uses its Community License and Acceptable Use Policy;
+OlympiadBench uses MIT. Because the referenced MATH500 and AIME24 cards do not
+declare a license, the artifact releases their hashes, identities, counts, and
+aggregate results but not their problem text. The complete resource matrix is
+in \texttt{LICENSE\_AND\_DATA\_USE.md}.
 
 \section*{Funding}
 This research received no specific grant from public, commercial, or
