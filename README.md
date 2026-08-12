@@ -46,6 +46,7 @@ The intended compiled artifact is `main_ne.pdf`.
   null-mask controls.
 - `audited_stability_results.csv` — three-seed endpoint reward/KL/entropy/clip.
 - `audited_transfer_results.csv` — three-seed DAPO and cross-model Mean4.
+- `audited_llama_lr_ladder.csv` — Llama3.1-8B three-seed LR ladder.
 - `audited_transfer_support_results.csv` — distinct three-seed support metrics
   for GRPO, DAPO, Qwen3-1.7B, and Llama3.1-8B.
 - `audited_efficiency_results.csv` — three-seed step-time and peak-memory
