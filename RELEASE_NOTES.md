@@ -5,6 +5,15 @@ Date: 2026-08-11
 ## Scope
 Clean public snapshot for the Neurocomputing submission and public GitHub artifact.
 
+## Authorship metadata update — 2026-08-13
+
+- Added Xue Song as the third author, affiliated with West China Hospital,
+  Sichuan University.
+- Recorded the author-confirmed CRediT contribution as Writing--review and
+  editing; Rui Shi remains the corresponding author.
+- Synchronized the manuscript, submission metadata, citation metadata, and
+  standalone CRediT declaration without inferring an e-mail address or ORCID.
+
 ## Full-factorial seed correction — 2026-08-13
 
 - Replaced the rounded seed-level values and sample SDs for the complete

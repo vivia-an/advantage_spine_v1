@@ -460,11 +460,11 @@ if 'severe degradation' not in concept:
 # Submission identity and AI disclosure must agree across the manuscript and
 # paste-ready supporting files. Unknown phone/postcode fields remain explicit
 # author-input items rather than inferred metadata.
-for token in ['Shikai Li','Qingsong Cai','Rui Shi','lishikai@wchscu.edu.cn',
+for token in ['Shikai Li','Qingsong Cai','Xue Song','Rui Shi','lishikai@wchscu.edu.cn',
               'dr.shirui@hotmail.com','West China Hospital, Sichuan University']:
     if token not in tex: fail.append(f'manuscript missing submission identity token {token}')
     if token not in submission_metadata: fail.append(f'submission metadata missing identity token {token}')
-for token in ['given-names: Shikai','given-names: Qingsong','given-names: Rui',
+for token in ['given-names: Shikai','given-names: Qingsong','given-names: Xue','given-names: Rui',
               'lishikai@wchscu.edu.cn','dr.shirui@hotmail.com']:
     if token not in citation_metadata: fail.append(f'CITATION.cff missing identity token {token}')
 for token in ['Cursor and OpenAI Codex','synthesize image',
