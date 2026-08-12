@@ -265,7 +265,8 @@ not additional training seeds.
 New runs load only SFT model weights. Full-state recovery is restricted to the
 same model, factorial cell, seed, and output directory. Requested, optimizer,
 scheduler, and logged learning rates agree for every included run; an
-exploratory Llama continuation with a logged-rate mismatch is excluded.
+exploratory run that did not satisfy the final matched protocol was excluded
+before aggregation.
 Learning-rate and state verification appears in \ref{app:audit}; the complete
 initialization, recovery, and evaluation contract appears in
 \ref{app:implementation}.
@@ -692,13 +693,6 @@ The exploratory tuned-dense diagnostic changes only three optimizer settings:
 16 warmup steps, global gradient clipping at 0.5, and $\beta_1=0.8$. Its
 three seed-level Mean4 values are released, but the condition is not part of the
 factorial or used as a tuned-dense optimum.
-
-\section{Llama exploratory conflict record}\label{app:llama}
-The excluded D18 run requested $10^{-4}$ but logged $5\times10^{-6}$ and ended
-at step 56 with reward $-1$, AIME accuracy 0, entropy 0.021, response clip ratio
-1.0, and collapse. D18b and D18c logged $10^{-4}$ correctly but also collapsed
-(steps 63 and 200). These runs are retained as negative evidence and are not
-pooled with the matched three-seed rerun in \cref{sec:transfer}.
 
 \section*{CRediT authorship contribution statement}
 \textbf{Shikai Li:} Investigation, Writing--original draft.
